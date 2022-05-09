@@ -3,7 +3,9 @@ from skimage.filters import median, threshold_otsu
 from skimage.morphology import remove_small_objects
 from skimage.segmentation import watershed
 from skimage.feature import peak_local_max
+from skimage.measure import regionprops
 from scipy import ndimage as ndi
+from uuid import uuid4
 import napari
 import numpy as np
 
@@ -31,7 +33,7 @@ viewer.add_image(large_objects_only, name="large_objects_only")
 # watershed segmentation
 distance = ndi.distance_transform_edt(large_objects_only)
 coords = peak_local_max(
-    distance, footprint=np.ones((300, 300)), labels=large_objects_only
+    distance, footprint=np.ones((450, 450)), labels=large_objects_only
 )
 mask = np.zeros(distance.shape, dtype=bool)
 mask[tuple(coords.T)] = True
@@ -41,3 +43,11 @@ labels = watershed(-distance, markers=markers, mask=large_objects_only)
 viewer.add_image(
     labels, name="watershed", contrast_limits=(0, labels.max()), colormap="viridis"
 )
+
+# read region properties
+props = regionprops(label_image=labels, intensity_image=img)
+
+for p in props:
+    section = np.pad(p.image_intensity, 50)
+    fname = str(uuid4()).replace("-", "") + ".tif"
+    io.imsave(f"sections/{fname}", section)
