@@ -1,6 +1,6 @@
 from skimage import io, img_as_ubyte
 from skimage.filters import median, threshold_otsu
-from skimage.morphology import remove_small_objects
+from skimage.morphology import remove_small_objects, binary_opening
 from skimage.segmentation import watershed
 from skimage.feature import peak_local_max
 from skimage.measure import regionprops
