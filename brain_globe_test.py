@@ -26,3 +26,8 @@ viewer.add_image(
 )
 
 annotation_stack.dtype
+
+# get some structures
+bg_atlas.structures["CTX"]
+mask = bg_atlas.get_structure_mask(549)
+viewer.add_image(mask, name="thalamus")
