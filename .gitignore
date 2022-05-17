@@ -130,3 +130,5 @@ dmypy.json
 
 arg/
 sections/
+test_brain/
+brainreg_output/
