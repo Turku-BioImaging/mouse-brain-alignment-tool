@@ -1,6 +1,6 @@
 from skimage import io, img_as_ubyte
 from skimage.filters import median, threshold_otsu
-from skimage.morphology import remove_small_objects
+from skimage.morphology import remove_small_objects, binary_opening
 from skimage.segmentation import watershed
 from skimage.feature import peak_local_max
 from skimage.measure import regionprops
@@ -25,6 +25,8 @@ thresholded = blurred > threshold_value
 viewer.add_image(thresholded, name="Otsu threshold")
 
 fill_holes = ndi.binary_fill_holes(thresholded)
+fill_holes = binary_opening(fill_holes, np.ones((5, 5)))
+# fill_holes = binary_closing(fill_holes, np.ones((5, 5)))
 viewer.add_image(fill_holes, name="fill_holes")
 
 large_objects_only = img_as_ubyte(remove_small_objects(fill_holes, min_size=6000))
