@@ -1,5 +1,5 @@
 from bg_atlasapi import BrainGlobeAtlas, show_atlases
-from matplotlib import pylot as plt
+from matplotlib import pyplot as plt
 import napari
 import numpy as np
 
@@ -18,7 +18,7 @@ viewer.add_image(
     name="anatomical_stack",
     contrast_limits=[0, np.max(anatomical_stack)],
 )
-viewer.add_image(annotation_stack, name="annotation_stack", contrast_limits=[0, 5000])
+viewer.add_image(annotation_stack, name="annotation_stack", contrast_limits=[0, 25000], colormap='viridis')
 viewer.add_image(
     hemispheres_stack,
     name="hemispheres_stack",
