@@ -6,6 +6,7 @@ dependencies:
   - ca-certificates
   - certifi
   - openssl
+  - napari>=0.4.17
   - pandas=1.5
   - pip
   - python=3.9
@@ -15,4 +16,3 @@ dependencies:
   - tqdm=4.64
   - pip:
     - bg-atlasapi==1.0.2
-    - napari==0.4.17
