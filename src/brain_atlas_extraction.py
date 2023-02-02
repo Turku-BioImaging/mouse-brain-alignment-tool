@@ -5,10 +5,11 @@ import shapely
 import random
 import napari
 import argparse
+import uuid
 import pandas as pd
 
 from bg_atlasapi import BrainGlobeAtlas as bga
-from skimage import io, img_as_uint
+from skimage import io, img_as_uint, img_as_ubyte
 from skimage.morphology import remove_small_objects
 from skimage.measure import label, regionprops
 from skimage.transform import rescale
@@ -17,6 +18,7 @@ from scipy import ndimage as ndi
 from tqdm import tqdm
 
 
+TEMP_PATH = "temp"
 ATLAS_PATH = "brain_atlas_files"
 SELECTED_ATLAS = "allen_mouse_100um"
 SELECTED_REGIONS = (
@@ -48,12 +50,12 @@ def mask_to_polygons(mask):
     ):
         all_polygons.append(shapely.geometry.shape(shape))
 
-    print(len(all_polygons))
+    # print(len(all_polygons))
     all_polygons = shapely.geometry.MultiPolygon(all_polygons)
     if not all_polygons.is_valid:
         all_polygons = all_polygons.buffer(0)
-        if all_polygons.type == "Polygon":
-            all_polygons = shapely.geometry.MultiPolygon([all_polygons])
+    if all_polygons.geom_type == "Polygon":
+        all_polygons = shapely.geometry.MultiPolygon([all_polygons])
     return all_polygons
 
 
@@ -61,6 +63,7 @@ def shapely_shaper(region, slice):
     roi_t = bga(SELECTED_ATLAS).get_structure_mask(region)
 
     slice_t = roi_t[slice]
+
     slice_t = slice_t > 0
     slice_t = ndi.binary_fill_holes(slice_t).astype(slice_t.dtype)
     slice_t = remove_small_objects(slice_t)
@@ -70,11 +73,21 @@ def shapely_shaper(region, slice):
         pad_width=((140, 140), (72, 72)),
     )
 
+    # slice_t = slice_t > 0
+    # slice_t = ndi.binary_fill_holes(slice_t)
+    # slice_t = remove_small_objects(slice_t)
+    # slice_t = np.pad(
+    #     (rescale(slice_t, (4, 4), anti_aliasing=False, order=0)),
+    #     pad_width=((140, 140, 72, 72)),
+    # )
+
+    # return slice_t
+
     if region == "Isocortex":
         # split isocortex shape in half
         slice_t[:, 300] = 0
-    polygon_t = mask_to_polygons(slice_t)
-    return polygon_t
+    polygon = mask_to_polygons(slice_t)
+    return polygon
 
 
 def _assign_region_colors():
@@ -111,7 +124,8 @@ def _prepare_atlas():
         pad_width=((0, 0), (140, 140), (72, 72)),
     )
 
-    # to match 600,600 xy-shape and pixel size of images, values might be different for other atlases
+    # to match 600,600 xy-shape and pixel size of images, values might be
+    # different for other atlases
     io.imsave(
         ATLAS_PATH + "/anatomical_atlas.tif", anatomical_stack_rs, check_contrast=False
     )
@@ -137,17 +151,23 @@ def _prepare_atlas():
     for i in range(n_slices):
         props_atlas = regionprops(label(filled_brain_mask[i]))
         if len(props_atlas) > 0:
-            center_of_mass_atlas = props_atlas[0].centroid
+            center_of_mass = props_atlas[0].centroid
 
-            slice_centroids.append({"slice": i, "centroid": center_of_mass_atlas})
+            slice_centroids.append(
+                {
+                    "slice": i,
+                    "centroid_y": center_of_mass[0],
+                    "centroid_x": center_of_mass[1],
+                }
+            )
 
     df = pd.DataFrame(slice_centroids)
     df.to_csv(f"{ATLAS_PATH}/slice_centroids.csv", index=False)
 
     # get regions of interest
     rois = np.empty((n_slices, 600, 600))
-    for roi in SELECTED_REGIONS:
-        mask_t = bg_atlas.get_structure_mask(roi)
+    for reg in SELECTED_REGIONS:
+        mask_t = bg_atlas.get_structure_mask(reg)
         mask_t = np.pad(
             (rescale(mask_t, (1, 4, 4), anti_aliasing=True, order=0)),
             pad_width=PAD_WIDTHS,
@@ -157,7 +177,7 @@ def _prepare_atlas():
         rois += mask_t
         # care for overlaping rois
 
-    if args.viewer == True:
+    if args.atlas_viewer is True:
         viewer.add_image(
             anatomical_stack_rs,
             interpolation3d="nearest",
@@ -184,49 +204,69 @@ def _prepare_atlas():
 
             polygons_list = []
 
-            # if len(region_polygon.geoms) > 0:
+            if len(region_polygon.geoms) > 0:
 
-            # for i in range(len(region_polygon.geoms)):
-            # print(region_polygon.geoms[i].coords)
-            # polygons_list.append(
-            #     (
-            #         np.flip(
-            #             np.array(region_polygon[poly].exterior.coords).astype(
-            #                 np.int16
-            #             ),
-            #             axis=1,
-            #         )
-            #     ).tolist()
-            # )
-            # probably easier way to save polygon as numpy array dirrectly from rasterio
+                # for i in range(len(region_polygon.geoms)):
+                #     print(region_polygon.geoms[i])
 
-            reg_dict[region] = polygons_list
-        slice_reg_dict[slice] = reg_dict
-    with open(ATLAS_PATH + "/rois_shapes_dict.txt", "w") as f:
-        f.write(str(slice_reg_dict))
+                for polygon in region_polygon.geoms:
+                    polygons_list.append(
+                        (
+                            np.flip(
+                                np.array(polygon.exterior.coords).astype(np.int16),
+                                axis=1,
+                            )
+                        ).tolist()
+                    )
 
-        # contours_s = []
-        # for i in polygon_t:
-        #     poly = shapely.geometry.Polygon(i)
-        #     poly_s = poly.simplify(tolerance=3)
-        #     contours_s.append(np.array(poly_s.boundary.coords[:]))
+                # for i in range(len(region_polygon.geoms)):
+                # print(region_polygon.geoms[i].coords)
+                # polygons_list.append(
+                #     (
+                #         np.flip(
+                #             np.array(region_polygon[poly].exterior.coords).astype(
+                #                 np.int16
+                #             ),
+                #             axis=1,
+                #         )
+                #     ).tolist()
+                # )
+                # probably easier way to save polygon as numpy array dirrectly from rasterio
+
+            print(polygons_list)
+        #     reg_dict[region] = polygons_list
+        # slice_reg_dict[slice] = reg_dict
+        # break
+    # with open(ATLAS_PATH + "/rois_shapes_dict.txt", "w") as f:
+    #     f.write(str(slice_reg_dict))
+
+    #     # contours_s = []
+    #     # for i in polygon_t:
+    #     #     poly = shapely.geometry.Polygon(i)
+    #     #     poly_s = poly.simplify(tolerance=3)
+    #     #     contours_s.append(np.array(poly_s.boundary.coords[:]))
 
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
+    parser.add_argument("--atlas-viewer", action="store_true")
     parser.add_argument("--viewer", action="store_true")
     args = parser.parse_args()
 
-    if args.viewer == True:
+    if args.viewer is True:
         viewer = napari.Viewer()
 
     # configure atlas dir
     shutil.rmtree(ATLAS_PATH, ignore_errors=True)
     os.makedirs(ATLAS_PATH)
 
+    # configure temp dir
+    shutil.rmtree(TEMP_PATH, ignore_errors=True)
+    os.makedirs(TEMP_PATH)
+
     _assign_region_colors()
     _prepare_atlas()
 
-    if args.viewer == True:
+    if args.viewer is True:
         napari.run()
