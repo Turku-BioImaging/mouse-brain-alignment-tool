@@ -51,9 +51,10 @@ PAD_WIDTHS = ((0, 0), (140, 140), (72, 72))
 
 viewer = None
 
+
 def mask_to_polygons(mask):
     all_polygons = []
-    
+
     for shape, _ in features.shapes(
         mask.astype(np.int16),
         mask=(mask > 0),
@@ -62,14 +63,15 @@ def mask_to_polygons(mask):
         all_polygons.append(shapely.geometry.shape(shape))
 
     all_polygons = shapely.geometry.MultiPolygon(all_polygons)
-    
+
     if not all_polygons.is_valid:
         all_polygons = all_polygons.buffer(0)
-        
+
     if all_polygons.geom_type == "Polygon":
         all_polygons = shapely.geometry.MultiPolygon([all_polygons])
-        
+
     return all_polygons
+
 
 def _assign_region_colors():
     list_colors = []
@@ -86,14 +88,12 @@ def _assign_region_colors():
         SELECTED_REGIONS[a]: [a + 1, list_colors[a]]
         for a, _ in enumerate(SELECTED_REGIONS)
     }
-        
-    with open(os.path.join(ATLAS_PATH, 'roi_colors_dict.txt'), 'w') as f:
-        f.write(str(roi_colors_dict))
-    
-    with open(os.path.join(ATLAS_PATH, 'roi_colors.json'), 'w') as f:
-        json.dump(roi_colors_dict, f)
-        
 
+    with open(os.path.join(ATLAS_PATH, "roi_colors_dict.txt"), "w") as f:
+        f.write(str(roi_colors_dict))
+
+    with open(os.path.join(ATLAS_PATH, "roi_colors.json"), "w") as f:
+        json.dump(roi_colors_dict, f)
 
 
 def shapely_shaper(region, slice):
@@ -113,19 +113,18 @@ def shapely_shaper(region, slice):
     if region == "Isocortex":
         # split isocortex shape in half
         slice_t[:, 300] = 0
-        
+
     polygon = mask_to_polygons(slice_t)
-    
+
     return polygon
 
-def _convert_slice_region_to_multipolygons(slice: int, region: str):
 
+def _convert_slice_region_to_multipolygons(slice: int, region: str):
     region_polygon = shapely_shaper(region, slice)
 
     polygons_list = []
 
     if len(region_polygon.geoms) > 0:
-
         for polygon in region_polygon.geoms:
             polygons_list.append(
                 (
@@ -135,16 +134,11 @@ def _convert_slice_region_to_multipolygons(slice: int, region: str):
                     )
                 ).tolist()
             )
-            
-    return {'region': region, 'polygons_list': polygons_list}
 
-
-
-
+    return {"region": region, "polygons_list": polygons_list}
 
 
 def _prepare_atlas():
-
     bg_atlas = bga(SELECTED_ATLAS)
 
     # anatomical atlas
@@ -158,7 +152,11 @@ def _prepare_atlas():
 
     # to match 600,600 xy-shape and pixel size of images, values might be
     # different for other atlases
-    io.imsave(os.path.join(ATLAS_PATH, 'anatomical_atlas.tif'), anatomical_stack_rs, check_contrast=False)
+    io.imsave(
+        os.path.join(ATLAS_PATH, "anatomical_atlas.tif"),
+        anatomical_stack_rs,
+        check_contrast=False,
+    )
 
     # atlas slices centroids
     brain_mask = bg_atlas.get_structure_mask(8)  # dtype np.uint32
@@ -191,7 +189,7 @@ def _prepare_atlas():
             )
 
     df = pd.DataFrame(slice_centroids)
-    df.to_csv(os.path.join(ATLAS_PATH, 'slice_centroids.csv'), index=False)
+    df.to_csv(os.path.join(ATLAS_PATH, "slice_centroids.csv"), index=False)
 
     # get regions of interest
     rois = np.empty((n_slices, 600, 600))
@@ -224,35 +222,34 @@ def _prepare_atlas():
     )
 
     # atlas rois to polygons
-    print("Converting atlas ROIs to polygons...")    
+    print("Converting atlas ROIs to polygons...")
     with mp.Pool(mp.cpu_count()) as pool:
-        
-        
         slice_region_dict = {}
-        
+
         for slice in tqdm(range(n_slices)):
-            
             region_dict = {}
-            
-            async_results = [pool.apply_async(_convert_slice_region_to_multipolygons, args=(slice, r)) for r in SELECTED_REGIONS]
-        
-        
+
+            async_results = [
+                pool.apply_async(
+                    _convert_slice_region_to_multipolygons, args=(slice, r)
+                )
+                for r in SELECTED_REGIONS
+            ]
+
             results = [arg.get() for arg in async_results]
             for i in results:
-                region_dict[i['region']] = i['polygons_list']
-            
+                region_dict[i["region"]] = i["polygons_list"]
+
             slice_region_dict[slice] = region_dict
-                
-                
-        with open(os.path.join(ATLAS_PATH, 'roi_shapes_dict.txt'), 'w') as f:
+
+        with open(os.path.join(ATLAS_PATH, "roi_shapes_dict.txt"), "w") as f:
             f.write(str(slice_region_dict))
-            
-        with open(os.path.join(ATLAS_PATH, 'roi_shapes.json'), 'w') as f:
+
+        with open(os.path.join(ATLAS_PATH, "roi_shapes.json"), "w") as f:
             json.dump(slice_region_dict, f)
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser()
     parser.add_argument("--atlas-viewer", action="store_true")
     parser.add_argument("--viewer", action="store_true")
