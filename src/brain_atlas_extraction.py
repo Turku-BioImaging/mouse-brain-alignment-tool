@@ -1,3 +1,13 @@
+"""
+MODULE: Brain atlas extraction
+
+This module extracts the brain atlas from the brain atlas API and saves it as a TIFF. ROIs from selected brain regions are saved in a TIFF stack using randomly selected colors. The ROIs are then converted to multipolygons and saved to a JSON dictionary. The atlas and related files are stored in the brain_atlas_files folder.
+
+Original code from Zuzana Čočková, modified by Junel Solis.
+Turku PET Centre, University of Turku, Finland
+Turku BioImaging, University of Turku and Åbo Akademi University, Finland
+"""
+
 import os
 import numpy as np
 import shutil
@@ -10,10 +20,10 @@ import pandas as pd
 import multiprocessing as mp
 
 from bg_atlasapi import BrainGlobeAtlas as bga
-from skimage import io
 from skimage.morphology import remove_small_objects
 from skimage.measure import label, regionprops
 from skimage.transform import rescale
+from skimage import io
 from rasterio import features, Affine
 from scipy import ndimage as ndi
 from tqdm import tqdm
