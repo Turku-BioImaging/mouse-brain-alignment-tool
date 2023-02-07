@@ -1,7 +1,10 @@
 """
-MODULE: Brain atlas extraction
+MODULE: Brain atlas setup
 
-This module extracts the brain atlas from the brain atlas API and saves it as a TIFF. ROIs from selected brain regions are saved in a TIFF stack using randomly selected colors. The ROIs are then converted to multipolygons and saved to a JSON dictionary. The atlas and related files are stored in the brain_atlas_files folder.
+This module extracts the brain atlas from the brain atlas API and saves it as a TIFF. 
+ROIs from selected brain regions are saved in a TIFF stack using randomly selected
+colors, and then converted to multipolygons and saved to a JSON dictionary. 
+The atlas and related files are stored in the brain_atlas_files folder.
 
 Original code from Zuzana Čočková, modified by Junel Solis.
 Turku PET Centre, University of Turku, Finland

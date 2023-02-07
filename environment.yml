@@ -6,6 +6,7 @@ dependencies:
   - ca-certificates
   - certifi
   - openssl
+  - matplotlib
   - pandas=1.5
   - pip
   - python=3.9
@@ -16,3 +17,4 @@ dependencies:
   - pip:
     - bg-atlasapi==1.0.2
     - napari[all]>=0.4.17
+    - PyQt5>=5.12.3
