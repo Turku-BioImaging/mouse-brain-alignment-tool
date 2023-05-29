@@ -11,7 +11,7 @@ from scipy import ndimage as ndi
 from skimage import img_as_ubyte, io
 from skimage.feature import peak_local_max
 from skimage.filters import median, threshold_otsu
-from skimage.measure import label, regionprops
+from skimage.measure import regionprops
 from skimage.morphology import binary_opening, remove_small_objects
 from skimage.segmentation import watershed
 
