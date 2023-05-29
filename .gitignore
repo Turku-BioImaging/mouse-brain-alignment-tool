@@ -133,3 +133,8 @@ sections/
 test_brain/
 brainreg_output/
 **/brain_atlas_files/
+
+src/data/
+**/project_data/
+
+**/workdir/

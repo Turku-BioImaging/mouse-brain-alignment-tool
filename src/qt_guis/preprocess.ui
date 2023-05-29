@@ -154,7 +154,7 @@
     </property>
    </widget>
   </widget>
-  <widget class="QGroupBox" name="group_slides">
+  <widget class="QGroupBox" name="group_rows">
    <property name="geometry">
     <rect>
      <x>60</x>
@@ -166,7 +166,7 @@
    <property name="title">
     <string/>
    </property>
-   <widget class="QRadioButton" name="slides_1">
+   <widget class="QRadioButton" name="rows_1">
     <property name="geometry">
      <rect>
       <x>170</x>
@@ -179,7 +179,7 @@
      <string>1</string>
     </property>
    </widget>
-   <widget class="QRadioButton" name="slides_2">
+   <widget class="QRadioButton" name="rows_2">
     <property name="geometry">
      <rect>
       <x>170</x>
@@ -210,7 +210,7 @@
      </font>
     </property>
     <property name="text">
-     <string>Number of slides:</string>
+     <string>Number of rows:</string>
     </property>
    </widget>
   </widget>
@@ -256,7 +256,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Right slide:</string>
+     <string>Upper row:</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_6">
@@ -269,7 +269,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Left slide:</string>
+     <string>Lower row:</string>
     </property>
    </widget>
   </widget>
