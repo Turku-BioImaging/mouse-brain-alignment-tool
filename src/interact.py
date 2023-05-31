@@ -40,7 +40,7 @@ def _load_atlas_data():
 
     slice_centroids_dict = {}
     df = pd.read_csv(os.path.join(ATLAS_DIR, "slice_centroids.csv"))
-    for key, row in df.iterrows():
+    for _, row in df.iterrows():
         slice_centroids_dict[int(row["slice"])] = (row["centroid_y"], row["centroid_x"])
 
     with open(os.path.join(ATLAS_DIR, "roi_shapes.json")) as f:
