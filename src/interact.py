@@ -74,7 +74,9 @@ def _select_background(args):
         bg_rect, edge_width=10, edge_color="red", face_color="orange"
     )
 
-    viewer.window.add_dock_widget([calculate_bg_widget, start_alignment])
+    viewer.window.add_dock_widget(
+        [calculate_bg_widget, start_alignment], name="Controls"
+    )
 
     return bg.height, bg.width
 
@@ -112,7 +114,7 @@ def _initialize_analysis_tool():
     print("test")
 
 
-@magicgui(call_button="Calculate bg")
+@magicgui(call_button="Calculate background")
 def calculate_bg_widget():
     # global bg_mean
     bg.mean = 0
