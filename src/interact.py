@@ -21,10 +21,12 @@ import argparse
 import json
 from glob import glob
 
+from modules.classes import Background
+
 ATLAS_DIR = os.path.join(os.path.dirname(__file__), "brain_atlas_files")
 
 
-global viewer, bg_height, bg_width, bg_mean, slide_img
+global viewer, bg
 
 
 def _load_atlas_data():
@@ -56,34 +58,38 @@ def _load_atlas_data():
 
 def _select_background(args):
     slide_path = glob(os.path.join(args.data_dir, "tiff", "*.tif"))[0]
-    slide_img = io.imread(slide_path)
-    bg_height, bg_width = int(slide_img.shape[0]), int(slide_img.shape[1])
-    rect_y, rect_x = int(bg_height / 2) - 400, int(bg_width / 2) - 200
+    bg.image = io.imread(slide_path)
+    bg.height, bg.width = int(bg.image.shape[0]), int(bg.image.shape[1])
+    rect_y, rect_x = int(bg.height / 2) - 400, int(bg.width / 2) - 200
 
     viewer.add_image(
-        slide_img,
+        bg.image,
         name="image_scan",
         colormap="gray_r",
-        contrast_limits=[0, np.max(slide_img)],
+        contrast_limits=[0, np.max(bg.image)],
     )
-    bg_layer = viewer.add_shapes(opacity=0.4, name="background_area")
+    bg.napari_layer = viewer.add_shapes(opacity=0.4, name="background_area")
     bg_rect = np.array([[rect_y, rect_x], [rect_y + 800, rect_x + 400]])
-    bg_layer.add_rectangles(
+    bg.napari_layer.add_rectangles(
         bg_rect, edge_width=10, edge_color="red", face_color="orange"
     )
-    bg_dock = viewer.window.add_dock_widget([bg_widget, start_alignment])
 
-    return bg_height, bg_width
+    viewer.window.add_dock_widget([calculate_bg_widget, start_alignment])
+
+    return bg.height, bg.width
 
 
-def _get_background(
-    y: int, x: int, slide_img: np.ndarray, bg_layer: napari.layers.Shapes
-):
+def _get_background():
+    y = bg.height
+    x = bg.width
+
     canvas_rect = np.array([[0, 0], [y - 1, x - 1]])
-    bg_layer.add_rectangles(canvas_rect)  # to keep shape image layer
-    bg_labels = bg_layer.to_labels()
-    bg_layer.data = bg_layer.data[0 : (len(bg_layer.data) - 1)]
-    mean = slide_img[bg_labels == 1].mean()
+    bg.napari_layer.add_rectangles(canvas_rect)  # to keep shape image layer
+    bg_labels = bg.napari_layer.to_labels()
+    bg.napari_layer.data = bg.napari_layer.data[0 : (len(bg.napari_layer.data) - 1)]
+    # mean = slide_img[bg_labels == 1].mean()
+    mean = bg.image[bg_labels == 1].mean()
+    print(f"Background mean: {mean}")
     return mean
 
 
@@ -107,10 +113,10 @@ def _initialize_analysis_tool():
 
 
 @magicgui(call_button="Calculate bg")
-def bg_widget():
-    global bg_mean
-    bg_mean = 0
-    bg_mean = _get_background()
+def calculate_bg_widget():
+    # global bg_mean
+    bg.mean = 0
+    bg.mean = _get_background()
 
 
 @magicgui(call_button="Start alignment")
@@ -137,8 +143,10 @@ if __name__ == "__main__":
     # load images
     image_paths = glob(os.path.join(args.data_dir, "sections", "*.tif"))
 
+    bg = Background()
+
     # configure napari
     viewer = napari.Viewer()
-    bg_height, bg_width = _select_background(args)
+    _select_background(args)
 
     napari.run()
