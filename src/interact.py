@@ -21,12 +21,19 @@ import argparse
 import json
 from glob import glob
 
-from modules.classes import Background
+from modules.classes import Background, Atlas, SectionImage
 
 ATLAS_DIR = os.path.join(os.path.dirname(__file__), "brain_atlas_files")
 
 
-global viewer, bg
+global viewer, bg, atlas, section_image
+
+
+def _load_section_image(data_dir: str, number: int):
+    global section_image
+    image_paths = sorted(glob(os.path.join(data_dir, "sections", "*.tif")))
+    selected_path = image_paths[number]
+    section_image = SectionImage(selected_path)
 
 
 def _load_atlas_data():
@@ -74,7 +81,7 @@ def _select_background(args):
         bg_rect, edge_width=10, edge_color="red", face_color="orange"
     )
 
-    viewer.window.add_dock_widget(
+    bg.napari_dock = viewer.window.add_dock_widget(
         [calculate_bg_widget, start_alignment], name="Controls"
     )
 
@@ -96,22 +103,38 @@ def _get_background():
 
 
 def _initialize_analysis_tool():
-    # global roi_layer, image_layer
-    # viewer.grid.enabled = True
-    # viewer.grid.shape = (1,-1)
-    # bg_dock.hide() # removal was giving error
-    # atlas_layer = viewer.add_image(
-    #     anatomical_stack_rs,
-    #     name="anatomical_stack",
-    #     contrast_limits=[0, np.max(anatomical_stack_rs)],
-    # )
-    # roi_layer = viewer.add_image(rois, name="atlas_rois",
-    #     colormap = "magma",
-    #     contrast_limits=[0, np.max(rois)])
-    # image_layer = viewer.add_image(loaded_img, name="image", colormap="gray_r")
-    # viewer.window.add_dock_widget([atlas_view, rois_widget, simple_rois_widget, hide_widget, analyze_widget, next_image, previous_image])
-    # viewer.reset_view()
-    print("test")
+    viewer.grid.enabled = True
+    viewer.grid.shape = (1, -1)
+    bg.napari_dock.hide()
+
+    atlas.napari_atlas_layer = viewer.add_image(
+        atlas.image, name="anatomical_stack", contrast_limits=[0, np.max(atlas.image)]
+    )
+
+    atlas.napari_roi_layer = viewer.add_image(
+        atlas.rois,
+        name="atlas_rois",
+        colormap="turbo",
+        contrast_limits=[0, np.max(atlas.rois)],
+    )
+
+    section_image.napari_layer = viewer.add_image(
+        section_image.image, name="image", colormap="gray_r"
+    )
+
+    viewer.window.add_dock_widget(
+        [
+            atlas_view_widget,
+            rois_widget,
+            simple_rois_widget,
+            hide_widget,
+            analyze_widget,
+            next_image_widget,
+            previous_image_widget,
+        ]
+    )
+
+    viewer.reset_view()
 
 
 @magicgui(call_button="Calculate background")
@@ -128,12 +151,101 @@ def start_alignment():
     _initialize_analysis_tool()
 
 
+@magicgui(call_button="Add ROIs / Reset")
+def rois_widget():
+    # _load_selected_rois(bg.image)
+    print("Add ROIs / Reset")
+
+
+@magicgui(call_button="Simplify ROIs")
+def simple_rois_widget():
+    # load_selected_rois(loaded_img, 4)
+    print("Simplify rois")
+
+
+@magicgui(call_button="Hide unselected rois")
+def hide_widget():
+    # shape_transparency()
+    print("Hide unselected rois")
+
+
+@magicgui(call_button="Analyze rois")
+def analyze_widget():
+    # roi_analyzer()
+    print("Analyze rois")
+
+
+@magicgui(call_button="Brain Atlas")
+def atlas_view_widget():
+    # global roi_layer
+    # viewer.grid.enabled = True
+    # viewer.grid.shape = (1,-1)
+    # viewer.layers.select_all()
+    # viewer.layers.remove_selected()
+    # atlas_layer = viewer.add_image(
+    #     anatomical_stack_rs,
+    #     name="anatomical_stack",
+    #     contrast_limits=[0, np.max(anatomical_stack_rs)],
+    # )
+    # roi_layer = viewer.add_image(rois, name="atlas_rois",
+    #     colormap = "magma",
+    #     contrast_limits=[0, np.max(rois)])
+    # image_layer = viewer.add_image(loaded_img, name="image", colormap="gray_r")
+    # viewer.reset_view()
+    print("Brain Atlas")
+
+
+@magicgui(call_button="Next image")
+def next_image_widget():
+    # global loaded_img
+    # selected_slice = int(roi_layer.position[0]) # get atlas slice position
+    # actual = list_names.index(imgname)
+    # if actual == len(list_names):
+    #     pass
+    # else:
+    #     image_loader(actual+1)
+    #     viewer.layers.remove("image")
+    #     loaded_img = align_centroids(loaded_img)
+    #     image_layer = viewer.add_image(loaded_img, name="image", colormap="gray_r")
+    #     if len(viewer.layers) == 3: # when brain atlas view is on
+    #         pass
+    #     else:
+    #         viewer.layers.reverse()
+    #     print(imgname)
+    # #viewer.layers.select_previous()
+    # #viewer.layers[0].mode = "SELECT"
+    print("Next image")
+
+
+@magicgui(call_button="Previous image")
+def previous_image_widget():
+    # global loaded_img
+    # selected_slice = int(roi_layer.position[0]) # get atlas slice position
+    # actual = list_names.index(imgname)
+    # if actual == 0:
+    #     pass
+    # else:
+    #     image_loader(actual-1)
+    #     viewer.layers.remove("image")
+    #     loaded_img = align_centroids(loaded_img)
+    #     image_layer = viewer.add_image(loaded_img, name="image", colormap="gray_r")
+    #     if len(viewer.layers) == 3: # when brain atlas view is on
+    #         pass
+    #     else:
+    #         viewer.layers.reverse()
+    #     print(imgname)
+    # #viewer.layers.select_previous()
+    # #viewer.layers[0].mode = "SELECT"
+    print("Previous image")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--data-dir", type=str, required=True)
+    parser.add_argument("--image-number", type=int, required=True)
     args = parser.parse_args()
 
-    ## load atlas data
+    ## load and configure atlas data
     (
         anatomical_atlas,
         rois,
@@ -142,8 +254,12 @@ if __name__ == "__main__":
         roi_shapes_dict,
     ) = _load_atlas_data()
 
-    # load images
-    image_paths = glob(os.path.join(args.data_dir, "sections", "*.tif"))
+    atlas = Atlas(
+        image=anatomical_atlas, rois=rois, region_column_names=region_column_names
+    )
+
+    # load selected section image
+    _load_section_image(args.data_dir, args.image_number)
 
     bg = Background()
 
