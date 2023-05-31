@@ -177,22 +177,27 @@ def analyze_widget():
 
 @magicgui(call_button="Brain Atlas")
 def atlas_view_widget():
-    # global roi_layer
-    # viewer.grid.enabled = True
-    # viewer.grid.shape = (1,-1)
-    # viewer.layers.select_all()
-    # viewer.layers.remove_selected()
-    # atlas_layer = viewer.add_image(
-    #     anatomical_stack_rs,
-    #     name="anatomical_stack",
-    #     contrast_limits=[0, np.max(anatomical_stack_rs)],
-    # )
-    # roi_layer = viewer.add_image(rois, name="atlas_rois",
-    #     colormap = "magma",
-    #     contrast_limits=[0, np.max(rois)])
-    # image_layer = viewer.add_image(loaded_img, name="image", colormap="gray_r")
-    # viewer.reset_view()
-    print("Brain Atlas")
+   
+    viewer.grid.enabled = True
+    viewer.grid.shape = (1, -1)
+    viewer.layers.select_all()
+    viewer.layers.remove_selected()
+    atlas.napari_atlas_layer = viewer.add_image(
+        atlas.image, name="anatomical_stack", contrast_limits=[0, np.max(atlas.image)]
+    )
+
+    atlas.napari_roi_layer = viewer.add_image(
+        atlas.rois,
+        name="atlas_rois",
+        colormap="turbo",
+        contrast_limits=[0, np.max(atlas.rois)],
+    )
+
+    section_image.napari_layer = viewer.add_image(
+        section_image.image, name="image", colormap="gray_r"
+    )
+    viewer.reset_view()
+
 
 
 @magicgui(call_button="Next image")
