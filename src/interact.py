@@ -11,16 +11,18 @@ import napari
 import numpy as np
 import pandas as pd
 
-# from skimage.filters import median, threshold_otsu
+# import pandas as pd
+from magicgui import magicgui
+from modules.classes import Atlas, Background, SectionImage
+
 # from skimage.morphology import remove_small_objects, binary_opening, area_closing
 # from skimage.segmentation import watershed
 # from skimage.feature import peak_local_max
 # from skimage.measure import label, regionprops
-# from scipy import ndimage as ndi
-# import pandas as pd
-from magicgui import magicgui
-from modules.classes import Atlas, Background, SectionImage
-from skimage import img_as_ubyte, io
+from scipy import ndimage as ndi
+
+# from skimage.filters import median, threshold_otsu
+from skimage import filters, img_as_ubyte, io, morphology, measure
 
 ATLAS_DIR = os.path.join(os.path.dirname(__file__), "brain_atlas_files")
 
@@ -116,7 +118,7 @@ def _initialize_analysis_tool():
     )
 
     section_image.napari_layer = viewer.add_image(
-        section_image.image, name="image", colormap="gray_r"
+        section_image.image, name="section_image", colormap="gray_r"
     )
 
     viewer.window.add_dock_widget(
@@ -132,6 +134,49 @@ def _initialize_analysis_tool():
     )
 
     viewer.reset_view()
+
+
+def _get_image_mask():
+    blurred = filters.median(section_image.image, np.ones((11, 11)))
+    threshold_value = filters.threshold_otsu(blurred)
+    thresholded = blurred > threshold_value
+    fill_holes = ndi.binary_fill_holes(thresholded)
+    fill_holes = ndi.binary_opening(fill_holes, np.ones((5, 5)))
+
+    large_objects_only = img_as_ubyte(
+        morphology.remove_small_objects(fill_holes, min_size=6000)
+    )
+
+    mask_img = measure.label(large_objects_only)
+    return mask_img
+
+
+def _align_centroids():
+    # print('test')
+    # return
+    masked_img = _get_image_mask()
+
+    selected_slice = int(viewer.dims.current_step[0])
+
+    center_of_mass_atlas = atlas.slice_centroids_dict[selected_slice]
+    # print(viewer.dims)
+
+    props_img = measure.regionprops(measure.label(masked_img))
+    center_of_mass_image = props_img[0].centroid
+
+    image = np.roll(
+        section_image.image,
+        -int(center_of_mass_image[1] - center_of_mass_atlas[1]),
+        axis=1,
+    )
+
+    image = np.roll(
+        section_image.image,
+        -int(center_of_mass_image[0] - center_of_mass_atlas[0]),
+        axis=0,
+    )
+
+    return image
 
 
 @magicgui(call_button="Calculate background")
@@ -189,31 +234,32 @@ def atlas_view_widget():
     )
 
     section_image.napari_layer = viewer.add_image(
-        section_image.image, name="image", colormap="gray_r"
+        section_image.image, name="section_image", colormap="gray_r"
     )
     viewer.reset_view()
 
 
 @magicgui(call_button="Next image")
 def next_image_widget():
-    # global loaded_img
-    # selected_slice = int(roi_layer.position[0]) # get atlas slice position
-    # actual = list_names.index(imgname)
-    # if actual == len(list_names):
-    #     pass
-    # else:
-    #     image_loader(actual+1)
-    #     viewer.layers.remove("image")
-    #     loaded_img = align_centroids(loaded_img)
-    #     image_layer = viewer.add_image(loaded_img, name="image", colormap="gray_r")
-    #     if len(viewer.layers) == 3: # when brain atlas view is on
-    #         pass
-    #     else:
-    #         viewer.layers.reverse()
-    #     print(imgname)
-    # #viewer.layers.select_previous()
-    # #viewer.layers[0].mode = "SELECT"
-    print("Next image")
+    global section_image
+    section_image_paths_index = section_image_paths.index(section_image.path)
+
+    if section_image_paths_index == len(section_image_paths) - 1:
+        pass
+    else:
+        if "section_image" in viewer.layers:
+            viewer.layers.remove("section_image")
+        section_image_paths_index += 1
+        section_image = SectionImage(section_image_paths[section_image_paths_index])
+
+        section_image.image = _align_centroids()
+        section_image.napari_layer = viewer.add_image(
+            section_image.image, name="section_image", colormap="gray_r"
+        )
+        if len(viewer.layers) == 3:
+            pass
+        else:
+            viewer.layers.reverse()
 
 
 @magicgui(call_button="Previous image")
@@ -253,7 +299,11 @@ if __name__ == "__main__":
     ) = _load_atlas_data()
 
     atlas = Atlas(
-        image=anatomical_atlas, rois=rois, region_column_names=region_column_names
+        image=anatomical_atlas,
+        rois=rois,
+        region_column_names=region_column_names,
+        slice_centroids_dict=slice_centroids_dict,
+        # roi_shapes_dict=roi_shapes_dict
     )
 
     # load first section image
