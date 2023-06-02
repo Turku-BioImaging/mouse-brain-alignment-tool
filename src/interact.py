@@ -1,5 +1,5 @@
 # import ast
-# import shapely
+import shapely
 import argparse
 import json
 import os
@@ -43,6 +43,7 @@ def _load_atlas_data():
         data = json.load(f)
         str_roi_list = list(data.keys())
         region_column_names = ["All_rois"] + list(str_roi_list)
+        roi_colors_dict = data
 
     slice_centroids_dict = {}
     df = pd.read_csv(os.path.join(ATLAS_DIR, "slice_centroids.csv"))
@@ -59,6 +60,7 @@ def _load_atlas_data():
         region_column_names,
         slice_centroids_dict,
         roi_shapes_dict,
+        roi_colors_dict,
     )
 
 
@@ -179,6 +181,62 @@ def _align_centroids():
     return image
 
 
+def _load_selected_rois(simplification: int = 0):
+    selected_slice = int(viewer.dims.current_step[0])
+    viewer.grid.enabled = False
+    viewer.layers.select_all()
+    viewer.layers.remove_selected()
+
+    section_image.napari_layer = viewer.add_image(
+        section_image.image, name="section_image", colormap="gray_r"
+    )
+
+    roi_names = []
+    atlas.napari_roi_shapes_layer = viewer.add_shapes(opacity=0.4, name="rois")
+
+    shapes_layer = atlas.napari_roi_shapes_layer
+    colors_dict = atlas.roi_colors_dict
+
+    for roi in atlas.roi_shapes_dict[str(selected_slice)]:
+        polygon_list_coords = atlas.roi_shapes_dict[str(selected_slice)][roi]
+        polygon_simplified = _simplify_polygons(polygon_list_coords, simplification)
+
+        if len(polygon_list_coords) > 0:
+            roi_names.extend([roi] * len(polygon_list_coords))
+
+            rgb_values = colors_dict[roi][1][:-1]
+            opacity_value = colors_dict[roi][1][-1]
+
+
+            rgb_floats = []
+            for i in rgb_values:
+                rgb_floats.append(i / 255.0)
+
+            shapes_layer.add_polygons(
+                np.array(polygon_simplified, dtype=object),
+                edge_width=2,
+                edge_color="red",
+                face_color=rgb_floats + [opacity_value],
+            )
+
+    shapes_layer.text = {
+        "string": roi_names,
+        "anchor": "center",
+        "translation": [0, 0],
+        "size": 15,
+        "color": "black",
+    }
+
+
+def _simplify_polygons(input_polygon, tolerance_value):
+    contours_s = []
+    for shape in input_polygon:
+        poly = shapely.geometry.Polygon(shape)
+        poly_s = poly.simplify(tolerance=tolerance_value)
+        contours_s.append(np.array(poly_s.boundary.coords[:]))
+    return contours_s
+
+
 @magicgui(call_button="Calculate background")
 def calculate_bg_widget():
     bg.mean = 0
@@ -195,7 +253,8 @@ def start_alignment():
 @magicgui(call_button="Add ROIs / Reset")
 def rois_widget():
     # _load_selected_rois(bg.image)
-    print("Add ROIs / Reset")
+    # print("Add ROIs / Reset")
+    _load_selected_rois()
 
 
 @magicgui(call_button="Simplify ROIs")
@@ -297,6 +356,7 @@ if __name__ == "__main__":
         region_column_names,
         slice_centroids_dict,
         roi_shapes_dict,
+        roi_colors_dict,
     ) = _load_atlas_data()
 
     atlas = Atlas(
@@ -304,7 +364,8 @@ if __name__ == "__main__":
         rois=rois,
         region_column_names=region_column_names,
         slice_centroids_dict=slice_centroids_dict,
-        # roi_shapes_dict=roi_shapes_dict
+        roi_shapes_dict=roi_shapes_dict,
+        roi_colors_dict=roi_colors_dict,
     )
 
     # load first section image

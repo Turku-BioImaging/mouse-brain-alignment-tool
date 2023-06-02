@@ -1,6 +1,7 @@
 import numpy as np
 from skimage import io
 
+
 class Background:
     height = None
     width = None
@@ -24,8 +25,9 @@ class Atlas:
     region_column_names = None
     slice_centroids_dict = None
     roi_shapes_dict = None
-    
+
     napari_atlas_layer = None
+    napari_roi_shapes_layer = None
     napari_roi_layer = None
 
     def __init__(
@@ -35,18 +37,21 @@ class Atlas:
         region_column_names: list = None,
         slice_centroids_dict: dict = None,
         roi_shapes_dict: dict = None,
+        roi_colors_dict: dict = None,
     ):
         self.image = image
         self.rois = rois
         self.region_column_names = region_column_names
         self.slice_centroids_dict = slice_centroids_dict
         self.roi_shapes_dict = roi_shapes_dict
+        self.roi_colors_dict = roi_colors_dict
+
 
 class SectionImage:
     path = None
     image = None
     napari_layer = None
-    
+
     def __init__(self, path: str):
         self.path = path
         self.image = io.imread(path)
