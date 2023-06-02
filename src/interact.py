@@ -139,7 +139,6 @@ def _initialize_analysis_tool():
 
 @magicgui(call_button="Calculate background")
 def calculate_bg_widget():
-    # global bg_mean
     bg.mean = 0
     bg.mean = _get_background()
 
@@ -177,7 +176,6 @@ def analyze_widget():
 
 @magicgui(call_button="Brain Atlas")
 def atlas_view_widget():
-   
     viewer.grid.enabled = True
     viewer.grid.shape = (1, -1)
     viewer.layers.select_all()
@@ -197,7 +195,6 @@ def atlas_view_widget():
         section_image.image, name="image", colormap="gray_r"
     )
     viewer.reset_view()
-
 
 
 @magicgui(call_button="Next image")
