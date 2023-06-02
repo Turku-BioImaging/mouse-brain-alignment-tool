@@ -264,24 +264,25 @@ def next_image_widget():
 
 @magicgui(call_button="Previous image")
 def previous_image_widget():
-    # global loaded_img
-    # selected_slice = int(roi_layer.position[0]) # get atlas slice position
-    # actual = list_names.index(imgname)
-    # if actual == 0:
-    #     pass
-    # else:
-    #     image_loader(actual-1)
-    #     viewer.layers.remove("image")
-    #     loaded_img = align_centroids(loaded_img)
-    #     image_layer = viewer.add_image(loaded_img, name="image", colormap="gray_r")
-    #     if len(viewer.layers) == 3: # when brain atlas view is on
-    #         pass
-    #     else:
-    #         viewer.layers.reverse()
-    #     print(imgname)
-    # #viewer.layers.select_previous()
-    # #viewer.layers[0].mode = "SELECT"
-    print("Previous image")
+    global section_image
+    section_image_paths_index = section_image_paths.index(section_image.path)
+
+    if section_image_paths_index == 0:
+        pass
+    else:
+        if "section_image" in viewer.layers:
+            viewer.layers.remove("section_image")
+        section_image_paths_index -= 1
+        section_image = SectionImage(section_image_paths[section_image_paths_index])
+        section_image.image = _align_centroids()
+        section_image.napari_layer = viewer.add_image(
+            section_image.image, name="section_image", colormap="gray_r"
+        )
+
+        if len(viewer.layers) == 3:
+            pass
+        else:
+            viewer.layers.reverse()
 
 
 if __name__ == "__main__":
