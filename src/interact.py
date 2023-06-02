@@ -1,11 +1,17 @@
-import napari
+# import ast
+# import shapely
+import argparse
+import json
 import os
-import sys
+from glob import glob
+
+import napari
+
+# import sys
 import numpy as np
-from skimage import io, img_as_ubyte
+import pandas as pd
 
-from skimage.filters import median, threshold_otsu
-
+# from skimage.filters import median, threshold_otsu
 # from skimage.morphology import remove_small_objects, binary_opening, area_closing
 # from skimage.segmentation import watershed
 # from skimage.feature import peak_local_max
@@ -13,27 +19,18 @@ from skimage.filters import median, threshold_otsu
 # from scipy import ndimage as ndi
 # import pandas as pd
 from magicgui import magicgui
-import pandas as pd
-
-# import ast
-import shapely
-import argparse
-import json
-from glob import glob
-
-from modules.classes import Background, Atlas, SectionImage
+from modules.classes import Atlas, Background, SectionImage
+from skimage import img_as_ubyte, io
 
 ATLAS_DIR = os.path.join(os.path.dirname(__file__), "brain_atlas_files")
 
 
-global viewer, bg, atlas, section_image
+global viewer, bg, atlas, section_image, section_image_paths
 
 
-def _load_section_image(data_dir: str, number: int):
+def _load_section_image(path: int):
     global section_image
-    image_paths = sorted(glob(os.path.join(data_dir, "sections", "*.tif")))
-    selected_path = image_paths[number]
-    section_image = SectionImage(selected_path)
+    section_image = SectionImage(path)
 
 
 def _load_atlas_data():
@@ -244,7 +241,6 @@ def previous_image_widget():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--data-dir", type=str, required=True)
-    parser.add_argument("--image-number", type=int, required=True)
     args = parser.parse_args()
 
     ## load and configure atlas data
@@ -260,8 +256,10 @@ if __name__ == "__main__":
         image=anatomical_atlas, rois=rois, region_column_names=region_column_names
     )
 
-    # load selected section image
-    _load_section_image(args.data_dir, args.image_number)
+    # load first section image
+    section_image_paths = sorted(glob(os.path.join(args.data_dir, "sections", "*.tif")))
+    assert len(section_image_paths) > 0
+    _load_section_image(section_image_paths[0])
 
     bg = Background()
 
