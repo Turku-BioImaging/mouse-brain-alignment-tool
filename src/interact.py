@@ -1,4 +1,3 @@
-# import ast
 import shapely
 import argparse
 import json
@@ -7,7 +6,6 @@ from glob import glob
 
 import napari
 
-# import sys
 import numpy as np
 import pandas as pd
 
@@ -154,14 +152,11 @@ def _get_image_mask():
 
 
 def _align_centroids():
-    # print('test')
-    # return
     masked_img = _get_image_mask()
 
     selected_slice = int(viewer.dims.current_step[0])
 
     center_of_mass_atlas = atlas.slice_centroids_dict[selected_slice]
-    # print(viewer.dims)
 
     props_img = measure.regionprops(measure.label(masked_img))
     center_of_mass_image = props_img[0].centroid
