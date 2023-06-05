@@ -178,6 +178,8 @@ def _align_centroids():
 
 def _load_selected_rois(simplification: int = 0):
     selected_slice = int(viewer.dims.current_step[0])
+    atlas.selected_slice = selected_slice
+
     viewer.grid.enabled = False
     viewer.layers.select_all()
     viewer.layers.remove_selected()
@@ -259,6 +261,71 @@ def _hide_unselected_rois():
     atlas.napari_roi_shapes_layer.edge_color = edge_color  # transparent
 
 
+def _polygon_to_roi() -> np.ndarray:
+    selected_slice = str(atlas.selected_slice)
+    preserved_shapes = list(atlas.napari_roi_shapes_layer.text.string.array)
+
+    # preserved_shapes_values = [
+    #     atlas.roi_shapes_dict[selected_slice][item] for item in preserved_shapes
+    # ]
+    preserved_shapes_values = []
+    for i in range(len(preserved_shapes)):
+        preserved_shapes_values.append(
+            atlas.roi_shapes_dict[selected_slice][preserved_shapes[i]]
+        )
+
+    canvas_rect = np.array([[0, 0], [599, 599]])
+
+    atlas.napari_roi_shapes_layer.add_rectangles(
+        canvas_rect
+    )  # add rectangle to keep shape (600,600) of label layer
+    labels_layer = atlas.napari_roi_shapes_layer.to_labels()
+    shapes_layer = atlas.napari_roi_shapes_layer
+
+    shapes_layer.data = shapes_layer.data[
+        0 : (len(shapes_layer.data) - 1)
+    ]  # remove the new rectangle shape
+    unique_labels = np.unique(labels_layer)
+    new_labels_layer = np.zeros(labels_layer.shape, dtype=int)
+
+    for i, val in enumerate(preserved_shapes_values):
+        label_ind = unique_labels[i]
+        # array_t = (labels_layer == label_ind) * val
+        print(val)
+        # print(array_t)
+        # print(np.unique(array_t))
+        # array_t = (labels_layer == label_ind).astype(int) * val
+        # print(array_t)
+        # print(label_ind)
+        # new_labels_layer += array_t
+     
+
+    # print(new_labels_layer.shape)
+    # print(np.unique(new_labels_layer))
+
+    # return new_labels_layer
+
+
+def _analyze_roi():
+    r = _polygon_to_roi()
+
+    # all_regions = r > 0
+    # areas = [sum(list(all_regions.flatten()))]  # first value for all active rois
+    # means = [section_image.image[all_regions].mean()]  # first value for all active rois
+    # bg_subtracted_means = [(means[0] - bg.mean if means[0] > bg.mean else 0) / areas[0]]
+
+    # # str_roi_list_dict = atlas.roi_shapes_dict
+    # # str_roi_list = list(str_roi_list_dict.keys()
+
+    # selected_slice = str(atlas.selected_slice)
+    # slice_roi_shapes_dict = atlas.roi_shapes_dict[selected_slice]
+    # # roi_shapes_dict_keys = list(atlas.roi_shapes_dict[selected_slice].keys())
+
+    # # for region_name in slice_roi_shapes_dict.keys():
+    # #     region = r == atlas.roi_shapes_dict[selected_slice][region_name]
+    # #     print(region)
+
+
 @magicgui(call_button="Calculate background")
 def calculate_bg_widget():
     bg.mean = 0
@@ -285,13 +352,12 @@ def simplify_rois_widget():
 @magicgui(call_button="Hide unselected rois")
 def hide_widget():
     _hide_unselected_rois()
-    # print("Hide unselected rois")
 
 
 @magicgui(call_button="Analyze rois")
 def analyze_widget():
-    # roi_analyzer()
-    print("Analyze rois")
+    _analyze_roi()
+    # print("Analyze rois")
 
 
 @magicgui(call_button="Brain Atlas")
