@@ -125,7 +125,7 @@ def _initialize_analysis_tool():
         [
             atlas_view_widget,
             rois_widget,
-            simple_rois_widget,
+            simplify_rois_widget,
             hide_widget,
             analyze_widget,
             next_image_widget,
@@ -202,7 +202,6 @@ def _load_selected_rois(simplification: int = 0):
             rgb_values = colors_dict[roi][1][:-1]
             opacity_value = colors_dict[roi][1][-1]
 
-
             rgb_floats = []
             for i in rgb_values:
                 rgb_floats.append(i / 255.0)
@@ -247,15 +246,12 @@ def start_alignment():
 
 @magicgui(call_button="Add ROIs / Reset")
 def rois_widget():
-    # _load_selected_rois(bg.image)
-    # print("Add ROIs / Reset")
     _load_selected_rois()
 
 
 @magicgui(call_button="Simplify ROIs")
-def simple_rois_widget():
-    # load_selected_rois(loaded_img, 4)
-    print("Simplify rois")
+def simplify_rois_widget():
+    _load_selected_rois(simplicifaction=4)
 
 
 @magicgui(call_button="Hide unselected rois")
