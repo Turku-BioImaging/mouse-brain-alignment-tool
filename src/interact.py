@@ -231,6 +231,34 @@ def _simplify_polygons(input_polygon, tolerance_value):
     return contours_s
 
 
+def _hide_unselected_rois():
+    selected = list(atlas.napari_roi_shapes_layer.selected_data)
+    selected_names = atlas.napari_roi_shapes_layer.text.string.array[selected]
+    color_array = []
+    edge_color = []
+    iter_t = 0
+
+    for i in range(atlas.napari_roi_shapes_layer.nshapes):
+        if i in selected:
+            rgb_values = atlas.roi_colors_dict[selected_names[iter_t]][1][:-1]
+            opacity_value = atlas.roi_colors_dict[selected_names[iter_t]][1][-1]
+
+            rgb_floats = []
+
+            for i in rgb_values:
+                rgb_floats.append(i / 255.0)
+
+            color_array.append(rgb_floats + [opacity_value])
+            edge_color.append([1.0, 0.0, 0.0, 1.0])
+            iter_t += 1
+        else:
+            color_array.append([0.0, 0.0, 0.0, 0.0])
+            edge_color.append([0.0, 0.0, 0.0, 0.0])
+
+    atlas.napari_roi_shapes_layer.face_color = color_array
+    atlas.napari_roi_shapes_layer.edge_color = edge_color  # transparent
+
+
 @magicgui(call_button="Calculate background")
 def calculate_bg_widget():
     bg.mean = 0
@@ -251,13 +279,13 @@ def rois_widget():
 
 @magicgui(call_button="Simplify ROIs")
 def simplify_rois_widget():
-    _load_selected_rois(simplicifaction=4)
+    _load_selected_rois(simplification=4)
 
 
 @magicgui(call_button="Hide unselected rois")
 def hide_widget():
-    # shape_transparency()
-    print("Hide unselected rois")
+    _hide_unselected_rois()
+    # print("Hide unselected rois")
 
 
 @magicgui(call_button="Analyze rois")
