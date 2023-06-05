@@ -25,6 +25,7 @@ class Atlas:
     region_column_names = None
     slice_centroids_dict = None
     roi_shapes_dict = None
+    selected_slice = None
 
     napari_atlas_layer = None
     napari_roi_shapes_layer = None
