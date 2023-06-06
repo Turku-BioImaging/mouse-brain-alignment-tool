@@ -261,49 +261,64 @@ def _hide_unselected_rois():
     atlas.napari_roi_shapes_layer.edge_color = edge_color  # transparent
 
 
+def _get_shapes_by_name(shape_layer: napari.layers.Shapes, target_name: str) -> list:
+    matching_shapes = []
+    for shape in shape_layer.data:
+        if shape.name == target_name:
+            matching_shapes.append(shape)
+
+    return matching_shapes
+
+
 def _polygon_to_roi() -> np.ndarray:
     selected_slice = str(atlas.selected_slice)
-    preserved_shapes = list(atlas.napari_roi_shapes_layer.text.string.array)
+    preserved_shapes_names = list(set(list(atlas.napari_roi_shapes_layer.text.string.array)))
 
-    # preserved_shapes_values = [
-    #     atlas.roi_shapes_dict[selected_slice][item] for item in preserved_shapes
-    # ]
-    preserved_shapes_values = []
-    for i in range(len(preserved_shapes)):
-        preserved_shapes_values.append(
-            atlas.roi_shapes_dict[selected_slice][preserved_shapes[i]]
-        )
+    roi_shapes_layer = atlas.napari_roi_shapes_layer
+    # selected_indices = roi_shapes_layer.selected_data
+    # selected_shapes = [roi_shapes_layer.data[i] for i in selected_indices]
+    
+    # get shapes with name in preserved_shapes_names    
+    matching_shapes = []
+    for region_name in preserved_shapes_names:
+        # matching_shapes.extend(_get_shapes_by_name(atlas.napari_roi_shapes_layer, n))
+        for shape in roi_shapes_layer.data:
+            if region_name == shape.name:
+                matching_shapes.append(shape)
+                
+    [print(i) for i in matching_shapes]
 
-    canvas_rect = np.array([[0, 0], [599, 599]])
+    # masks = atlas.napari_roi_shapes_layer.to_masks()
 
-    atlas.napari_roi_shapes_layer.add_rectangles(
-        canvas_rect
-    )  # add rectangle to keep shape (600,600) of label layer
-    labels_layer = atlas.napari_roi_shapes_layer.to_labels()
-    shapes_layer = atlas.napari_roi_shapes_layer
+    # canvas_rect = np.array([[0, 0], [599, 599]])
 
-    shapes_layer.data = shapes_layer.data[
-        0 : (len(shapes_layer.data) - 1)
-    ]  # remove the new rectangle shape
-    unique_labels = np.unique(labels_layer)
-    new_labels_layer = np.zeros(labels_layer.shape, dtype=int)
+    # atlas.napari_roi_shapes_layer.add_rectangles(
+    #     canvas_rect
+    # )  # add rectangle to keep shape (600,600) of label layer
+    # labels_layer = atlas.napari_roi_shapes_layer.to_labels()
+    # shapes_layer = atlas.napari_roi_shapes_layer
 
-    for i, val in enumerate(preserved_shapes_values):
-        label_ind = unique_labels[i]
-        # array_t = (labels_layer == label_ind) * val
-        print(val)
-        # print(array_t)
-        # print(np.unique(array_t))
-        # array_t = (labels_layer == label_ind).astype(int) * val
-        # print(array_t)
-        # print(label_ind)
-        # new_labels_layer += array_t
-     
+    # shapes_layer.data = shapes_layer.data[
+    #     0 : (len(shapes_layer.data) - 1)
+    # ]  # remove the new rectangle shape
+    # unique_labels = np.unique(labels_layer)
+    # new_labels_layer = np.zeros(labels_layer.shape, dtype=int)
 
-    # print(new_labels_layer.shape)
-    # print(np.unique(new_labels_layer))
+    # for i, val in enumerate(preserved_shapes_values):
+    #     label_ind = unique_labels[i]
+    #     # array_t = (labels_layer == label_ind) * val
+    #     print(val)
+    #     # print(array_t)
+    #     # print(np.unique(array_t))
+    #     # array_t = (labels_layer == label_ind).astype(int) * val
+    #     # print(array_t)
+    #     # print(label_ind)
+    #     # new_labels_layer += array_t
 
-    # return new_labels_layer
+    # # print(new_labels_layer.shape)
+    # # print(np.unique(new_labels_layer))
+
+    # # return new_labels_layer
 
 
 def _analyze_roi():
