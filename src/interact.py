@@ -261,15 +261,6 @@ def _hide_unselected_rois():
     atlas.napari_roi_shapes_layer.edge_color = edge_color  # transparent
 
 
-def _get_shapes_by_name(shape_layer: napari.layers.Shapes, target_name: str) -> list:
-    matching_shapes = []
-    for shape in shape_layer.data:
-        if shape.name == target_name:
-            matching_shapes.append(shape)
-
-    return matching_shapes
-
-
 def _polygons_to_roi() -> np.ndarray:
     shapes_layer = atlas.napari_roi_shapes_layer
 
