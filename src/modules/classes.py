@@ -69,8 +69,9 @@ class SectionImage:
 class Results:
     region_names = None
     data = None
+    data_path = None
 
-    def __init__(self):
+    def __init__(self, data_dir: str = None):
         # init region names
         with open(os.path.join(ATLAS_DIR, "roi_colors.json")) as f:
             data = json.load(f)
@@ -79,6 +80,9 @@ class Results:
         self.data = pd.DataFrame(
             columns=["image_filename"] + self.region_names,
         )
+
+        assert os.path.isdir(data_dir)
+        self.data_path = os.path.join(data_dir, "results.csv")
 
     def add_row(self, row: dict):
         assert all(key in row for key in self.region_names + ["image_filename"])
@@ -90,5 +94,7 @@ class Results:
 
         else:
             self.data = self.data.append(row, ignore_index=True)
+
+        self.data.to_csv(self.data_path, index=False)
 
     # def check_if_filename_exists:

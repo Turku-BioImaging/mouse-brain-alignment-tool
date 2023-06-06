@@ -478,7 +478,7 @@ if __name__ == "__main__":
     )
 
     ## init results data
-    results_data = Results()
+    results_data = Results(data_dir=args.data_dir)
 
     # load first section image
     section_image_paths = sorted(glob(os.path.join(args.data_dir, "sections", "*.tif")))
