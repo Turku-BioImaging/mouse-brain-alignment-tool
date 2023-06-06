@@ -20,6 +20,7 @@ from scipy import ndimage as ndi
 
 # from skimage.filters import median, threshold_otsu
 from skimage import filters, img_as_ubyte, io, measure, morphology
+from skimage.transform import rescale
 
 ATLAS_DIR = os.path.join(os.path.dirname(__file__), "brain_atlas_files")
 
@@ -64,6 +65,7 @@ def _load_atlas_data():
 def _select_background(args):
     slide_path = glob(os.path.join(args.data_dir, "tiff", "*.tif"))[0]
     bg.image = io.imread(slide_path)
+    bg.image = rescale(bg.image, 0.5, anti_aliasing=False, preserve_range=True) # scalling down image to reduce size
     bg.height, bg.width = int(bg.image.shape[0]), int(bg.image.shape[1])
     rect_y, rect_x = int(bg.height / 2) - 400, int(bg.width / 2) - 200
 
@@ -78,7 +80,8 @@ def _select_background(args):
     bg.napari_layer.add_rectangles(
         bg_rect, edge_width=10, edge_color="red", face_color="orange"
     )
-
+    bg.napari_layer.mode = 'SELECT' # Set the mode (tool) of the backgroud shape layer to "select"
+    bg.napari_layer.selected_data = [0] # Make active selection of the bacground rectangle
     bg.napari_dock = viewer.window.add_dock_widget(
         [calculate_bg_widget, start_alignment], name="Controls"
     )
@@ -487,5 +490,5 @@ if __name__ == "__main__":
     # configure napari
     viewer = napari.Viewer()
     _select_background(args)
-
+    
     napari.run()
