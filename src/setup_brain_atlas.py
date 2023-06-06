@@ -33,7 +33,7 @@ from tqdm import tqdm
 
 
 TEMP_PATH = "temp"
-ATLAS_PATH = "brain_atlas_files"
+ATLAS_PATH = os.path.join(os.path.dirname(__file__), "brain_atlas_files")
 SELECTED_ATLAS = "allen_mouse_100um"
 SELECTED_REGIONS = (
     "CB",
