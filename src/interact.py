@@ -1,17 +1,16 @@
-import shapely
 import argparse
 import json
 import os
 from glob import glob
 
 import napari
-
 import numpy as np
 import pandas as pd
+import shapely
 
 # import pandas as pd
 from magicgui import magicgui
-from modules.classes import Atlas, Background, SectionImage
+from modules.classes import Atlas, Background, ResultsData, SectionImage
 
 # from skimage.morphology import remove_small_objects, binary_opening, area_closing
 # from skimage.segmentation import watershed
@@ -20,12 +19,12 @@ from modules.classes import Atlas, Background, SectionImage
 from scipy import ndimage as ndi
 
 # from skimage.filters import median, threshold_otsu
-from skimage import filters, img_as_ubyte, io, morphology, measure
+from skimage import filters, img_as_ubyte, io, measure, morphology
 
 ATLAS_DIR = os.path.join(os.path.dirname(__file__), "brain_atlas_files")
 
 
-global viewer, bg, atlas, section_image, section_image_paths
+global viewer, bg, atlas, section_image, section_image_paths, results_data
 
 
 def _load_section_image(path: int):
@@ -296,24 +295,56 @@ def _polygons_to_roi() -> np.ndarray:
 
 def _analyze_roi():
     label_names, labels = _polygons_to_roi()
-    print(label_names)
     all_regions = labels > 0
+    
+    results_dict = {
+        'image_fname': section_image.fname,
+    }
 
-    # all_regions = r > 0
-    # areas = [sum(list(all_regions.flatten()))]  # first value for all active rois
-    # means = [section_image.image[all_regions].mean()]  # first value for all active rois
-    # bg_subtracted_means = [(means[0] - bg.mean if means[0] > bg.mean else 0) / areas[0]]
+    # # create areas list and append total area covered by regions
+    # areas = [np.count_nonzero(all_regions)]
 
-    # # str_roi_list_dict = atlas.roi_shapes_dict
-    # # str_roi_list = list(str_roi_list_dict.keys()
+    # # create means list and append mean intensity of all regions
+    # # in the section image.
+    # # The first value is the mean intensity of the area covered by all regions
+    # means = [section_image.image[all_regions].mean()]
 
-    # selected_slice = str(atlas.selected_slice)
-    # slice_roi_shapes_dict = atlas.roi_shapes_dict[selected_slice]
-    # # roi_shapes_dict_keys = list(atlas.roi_shapes_dict[selected_slice].keys())
+    # # Initialize list containing bg-subtracted means.
+    # # The first item is for the area covered by all regions
+    # bg_subtracted_means_per_pixel = []
+    # if means[0] > bg.mean:
+    #     item = (means[0] - bg.mean) / areas[0]
+    #     bg_subtracted_means_per_pixel.append(item)
+    # else:
+    #     bg_subtracted_means_per_pixel.append(0)
 
-    # # for region_name in slice_roi_shapes_dict.keys():
-    # #     region = r == atlas.roi_shapes_dict[selected_slice][region_name]
-    # #     print(region)
+    # Pair up region names and labels.
+    # On each iteration, check if the label region exists in the selected slice
+    # according to the atlas. If it does and the region is on multiple polygons,
+    # combine the labels as
+    
+
+    
+    for region_name in results_data.region_names:
+        if region_name in label_names:
+            roi_mean = section_image.image[
+                labels == label_names.index(region_name)
+            ].mean()
+            # means.append(roi_mean)
+
+            area = np.count_nonzero(labels == label_names.index(region_name))
+            # areas.append(area)
+
+            bg_subtracted_mean_per_pixel = (
+                roi_mean - bg.mean if roi_mean > bg.mean else 0
+            ) / area
+        else:
+            # means.append(np.nan)
+            # areas.append(np.nan)
+            # bg_subtracted_means_per_pixel.append(np.nan)
+            bg_subtracted_mean_per_pixel = np.nan
+
+    results_
 
 
 @magicgui(call_button="Calculate background")
@@ -442,6 +473,9 @@ if __name__ == "__main__":
         roi_shapes_dict=roi_shapes_dict,
         roi_colors_dict=roi_colors_dict,
     )
+
+    ## init results data
+    results_data = ResultsData()
 
     # load first section image
     section_image_paths = sorted(glob(os.path.join(args.data_dir, "sections", "*.tif")))

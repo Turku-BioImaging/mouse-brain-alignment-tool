@@ -1,5 +1,11 @@
+import json
+import os
+
 import numpy as np
+import pandas as pd
 from skimage import io
+
+ATLAS_DIR = os.path.join(os.path.dirname(__file__), "..", "brain_atlas_files")
 
 
 class Background:
@@ -56,3 +62,16 @@ class SectionImage:
     def __init__(self, path: str):
         self.path = path
         self.image = io.imread(path)
+
+
+class ResultsData:
+    region_names = None
+    data = None
+
+    def __init__(self):
+        # init region names
+        with open(os.path.join(ATLAS_DIR, "roi_colors.json")) as f:
+            data = json.load(f)
+            self.region_names = ["All_ROIs"] + list(data.keys())
+
+        self.data = pd.DataFrame(columns=self.region_names)
