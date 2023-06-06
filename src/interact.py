@@ -77,7 +77,7 @@ def _select_background(args):
         contrast_limits=[0, np.max(bg.image)],
     )
     bg.napari_layer = viewer.add_shapes(opacity=0.4, name="background_area")
-    bg_rect = np.array([[rect_y, rect_x], [rect_y + 800, rect_x + 400]])
+    bg_rect = np.array([[rect_y, rect_x], [rect_y + 400, rect_x + 200]])
     bg.napari_layer.add_rectangles(
         bg_rect, edge_width=10, edge_color="red", face_color="orange"
     )
@@ -133,8 +133,11 @@ def _initialize_analysis_tool():
             analyze_widget,
             next_image_widget,
             previous_image_widget,
+            image_name_widget,
         ]
     )
+    image_name_widget.enabled = False
+    # image_name_widget.update(analyzed = ) # set value as True or False based on dataframe with results
 
     viewer.reset_view()
 
@@ -337,6 +340,9 @@ def next_image_widget():
         section_image.napari_layer = viewer.add_image(
             section_image.image, name="section_image", colormap="gray_r"
         )
+
+        image_name_widget.update(IMG = section_image.name)
+        
         if len(viewer.layers) == 3:
             pass
         else:
@@ -359,6 +365,8 @@ def previous_image_widget():
         section_image.napari_layer = viewer.add_image(
             section_image.image, name="section_image", colormap="gray_r"
         )
+
+        image_name_widget.update(IMG = section_image.name) 
 
         if len(viewer.layers) == 3:
             pass
@@ -394,6 +402,11 @@ if __name__ == "__main__":
     section_image_paths = sorted(glob(os.path.join(args.data_dir, "sections", "*.tif")))
     assert len(section_image_paths) > 0
     _load_section_image(section_image_paths[0])
+
+
+    @magicgui(call_button=' ')
+    def image_name_widget(IMG: str = section_image.name, analyzed: bool = False):
+        pass
 
     bg = Background()
 
