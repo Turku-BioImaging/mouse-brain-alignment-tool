@@ -259,6 +259,9 @@ def _prepare_atlas():
         _save_rois_to_tiff(n_slices=n_slices, bg_atlas=bg_atlas)
 
     if args.force_download is True or _check_files() is False:
+        _assign_region_colors()
+
+    if args.force_download is True or _check_files() is False:
         _save_roi_shapes(n_slices=n_slices)
 
     if args.force_download is True or _check_files() is False:
@@ -274,5 +277,4 @@ if __name__ == "__main__":
     if not os.path.isdir(ATLAS_PATH):
         os.makedirs(ATLAS_PATH)
 
-    _assign_region_colors()
     _prepare_atlas()
