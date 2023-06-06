@@ -11,28 +11,24 @@ Turku PET Centre, University of Turku, Finland
 Turku BioImaging, University of Turku and Åbo Akademi University, Finland
 """
 
-import os
-import numpy as np
-import shutil
-import shapely
-import random
-import napari
 import argparse
 import json
-import pandas as pd
 import multiprocessing as mp
+import os
+import random
 
+import numpy as np
+import pandas as pd
+import shapely
 from bg_atlasapi import BrainGlobeAtlas as bga
-from skimage.morphology import remove_small_objects
-from skimage.measure import label, regionprops
-from skimage.transform import rescale
-from skimage import io
-from rasterio import features, Affine
+from rasterio import Affine, features
 from scipy import ndimage as ndi
+from skimage import io
+from skimage.measure import label, regionprops
+from skimage.morphology import remove_small_objects
+from skimage.transform import rescale
 from tqdm import tqdm
 
-
-TEMP_PATH = "temp"
 ATLAS_PATH = os.path.join(os.path.dirname(__file__), "brain_atlas_files")
 SELECTED_ATLAS = "allen_mouse_100um"
 SELECTED_REGIONS = (
@@ -52,7 +48,106 @@ SELECTED_REGIONS = (
 )
 PAD_WIDTHS = ((0, 0), (140, 140), (72, 72))
 
-viewer = None
+
+def _check_files():
+    if not os.path.isfile(os.path.join(ATLAS_PATH, "roi_colors.json")):
+        return False
+
+    if not os.path.isfile(os.path.join(ATLAS_PATH, "slice_centroids.csv")):
+        return False
+
+    if not os.path.isfile(os.path.join(ATLAS_PATH, "roi_shapes.json")):
+        return False
+
+    print("All text data files found.")
+    return True
+
+
+def _check_tiff_files():
+    if not os.path.isfile(os.path.join(ATLAS_PATH, "anatomical_atlas.tif")):
+        return False
+
+    if not os.path.isfile(os.path.join(ATLAS_PATH, "rois_atlas.tif")):
+        return False
+
+    print("Atlas TIFFs found.")
+    return True
+
+
+def _save_rois_to_tiff(n_slices: int, bg_atlas: bga):
+    # get regions of interest
+    rois = np.empty((n_slices, 600, 600))
+    for reg in SELECTED_REGIONS:
+        mask_t = bg_atlas.get_structure_mask(reg)
+        mask_t = np.pad(
+            (rescale(mask_t, (1, 4, 4), anti_aliasing=True, order=0)),
+            pad_width=PAD_WIDTHS,
+        )
+
+        # not binary anymore
+        rois += mask_t
+        # care for overlaping rois
+
+    io.imsave(os.path.join(ATLAS_PATH, "rois_atlas.tif"), rois, check_contrast=False)
+
+
+def _save_slice_centroids(bg_atlas: bga, n_slices: int):
+    # atlas slices centroids
+    brain_mask = bg_atlas.get_structure_mask(8)  # dtype np.uint32
+
+    # brain_mask = brain_mask / brain_mask.max()
+    brain_mask = np.pad(
+        (rescale(brain_mask, (1, 4, 4), anti_aliasing=True, order=0)),
+        pad_width=PAD_WIDTHS,
+    )
+
+    filled_brain_mask = ndi.binary_dilation(brain_mask)
+
+    for i in range(n_slices):
+        filled_brain_mask[i] = ndi.binary_fill_holes(filled_brain_mask[i])
+
+    filled_brain_mask = ndi.binary_erosion(filled_brain_mask)
+    slice_centroids = []
+    for i in range(n_slices):
+        props_atlas = regionprops(label(brain_mask[i]))
+        if len(props_atlas) > 0:
+            center_of_mass = props_atlas[0].centroid
+
+            slice_centroids.append(
+                {
+                    "slice": i,
+                    "centroid_y": center_of_mass[0],
+                    "centroid_x": center_of_mass[1],
+                }
+            )
+
+    df = pd.DataFrame(slice_centroids)
+    df.to_csv(os.path.join(ATLAS_PATH, "slice_centroids.csv"), index=False)
+
+
+def _save_roi_shapes(n_slices: int):
+    print("Converting atlas ROIs to polygons...")
+    with mp.Pool(mp.cpu_count()) as pool:
+        slice_region_dict = {}
+
+        for slice in tqdm(range(n_slices)):
+            region_dict = {}
+
+            async_results = [
+                pool.apply_async(
+                    _convert_slice_region_to_multipolygons, args=(slice, r)
+                )
+                for r in SELECTED_REGIONS
+            ]
+
+            results = [arg.get() for arg in async_results]
+            for i in results:
+                region_dict[i["region"]] = i["polygons_list"]
+
+            slice_region_dict[slice] = region_dict
+
+        with open(os.path.join(ATLAS_PATH, "roi_shapes.json"), "w") as f:
+            json.dump(slice_region_dict, f)
 
 
 def mask_to_polygons(mask):
@@ -91,9 +186,6 @@ def _assign_region_colors():
         SELECTED_REGIONS[a]: [a + 1, list_colors[a]]
         for a, _ in enumerate(SELECTED_REGIONS)
     }
-
-    with open(os.path.join(ATLAS_PATH, "roi_colors_dict.txt"), "w") as f:
-        f.write(str(roi_colors_dict))
 
     with open(os.path.join(ATLAS_PATH, "roi_colors.json"), "w") as f:
         json.dump(roi_colors_dict, f)
@@ -155,122 +247,34 @@ def _prepare_atlas():
 
     # to match 600,600 xy-shape and pixel size of images, values might be
     # different for other atlases
-    io.imsave(
-        os.path.join(ATLAS_PATH, "anatomical_atlas.tif"),
-        anatomical_stack_rs,
-        check_contrast=False,
-    )
 
-    # atlas slices centroids
-    brain_mask = bg_atlas.get_structure_mask(8)  # dtype np.uint32
-
-    # brain_mask = brain_mask / brain_mask.max()
-    brain_mask = np.pad(
-        (rescale(brain_mask, (1, 4, 4), anti_aliasing=True, order=0)),
-        pad_width=PAD_WIDTHS,
-    )
-
-    filled_brain_mask = ndi.binary_dilation(brain_mask)
-
-    for i in range(n_slices):
-        filled_brain_mask[i] = ndi.binary_fill_holes(filled_brain_mask[i])
-
-    filled_brain_mask = ndi.binary_erosion(filled_brain_mask)
-
-    slice_centroids = []
-    for i in range(n_slices):
-        props_atlas = regionprops(label(filled_brain_mask[i]))
-        if len(props_atlas) > 0:
-            center_of_mass = props_atlas[0].centroid
-
-            slice_centroids.append(
-                {
-                    "slice": i,
-                    "centroid_y": center_of_mass[0],
-                    "centroid_x": center_of_mass[1],
-                }
-            )
-
-    df = pd.DataFrame(slice_centroids)
-    df.to_csv(os.path.join(ATLAS_PATH, "slice_centroids.csv"), index=False)
-
-    # get regions of interest
-    rois = np.empty((n_slices, 600, 600))
-    for reg in SELECTED_REGIONS:
-        mask_t = bg_atlas.get_structure_mask(reg)
-        mask_t = np.pad(
-            (rescale(mask_t, (1, 4, 4), anti_aliasing=True, order=0)),
-            pad_width=PAD_WIDTHS,
-        )
-
-        # not binary anymore
-        rois += mask_t
-        # care for overlaping rois
-
-    if args.atlas_viewer is True:
-        viewer.add_image(
+    if args.force_download is True or _check_tiff_files() is False:
+        io.imsave(
+            os.path.join(ATLAS_PATH, "anatomical_atlas.tif"),
             anatomical_stack_rs,
-            interpolation3d="nearest",
-            colormap="turbo",
+            check_contrast=False,
         )
-        viewer.add_image(
-            filled_brain_mask, interpolation3d="nearest", colormap="viridis"
-        )
-        viewer.add_image(rois, interpolation3d="nearest", colormap="turbo")
 
-    io.imsave(
-        ATLAS_PATH + "/rois_atlas.tif",
-        rois,
-        check_contrast=False,
-    )
+    if args.force_download is True or _check_tiff_files() is False:
+        _save_rois_to_tiff(n_slices=n_slices, bg_atlas=bg_atlas)
 
-    # atlas rois to polygons
-    print("Converting atlas ROIs to polygons...")
-    with mp.Pool(mp.cpu_count()) as pool:
-        slice_region_dict = {}
+    if args.force_download is True or _check_files() is False:
+        _assign_region_colors()
 
-        for slice in tqdm(range(n_slices)):
-            region_dict = {}
+    if args.force_download is True or _check_files() is False:
+        _save_roi_shapes(n_slices=n_slices)
 
-            async_results = [
-                pool.apply_async(
-                    _convert_slice_region_to_multipolygons, args=(slice, r)
-                )
-                for r in SELECTED_REGIONS
-            ]
-
-            results = [arg.get() for arg in async_results]
-            for i in results:
-                region_dict[i["region"]] = i["polygons_list"]
-
-            slice_region_dict[slice] = region_dict
-
-        with open(os.path.join(ATLAS_PATH, "roi_shapes_dict.txt"), "w") as f:
-            f.write(str(slice_region_dict))
-
-        with open(os.path.join(ATLAS_PATH, "roi_shapes.json"), "w") as f:
-            json.dump(slice_region_dict, f)
+    if args.force_download is True or _check_files() is False:
+        _save_slice_centroids(bg_atlas=bg_atlas, n_slices=n_slices)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--atlas-viewer", action="store_true")
-    parser.add_argument("--viewer", action="store_true")
+    parser.add_argument("--force-download", action="store_true")
     args = parser.parse_args()
 
-    if args.viewer is True:
-        viewer = napari.Viewer()
-
     # configure atlas dir
-    shutil.rmtree(ATLAS_PATH, ignore_errors=True)
-    os.makedirs(ATLAS_PATH)
+    if not os.path.isdir(ATLAS_PATH):
+        os.makedirs(ATLAS_PATH)
 
-    # configure temp dir
-    shutil.rmtree(TEMP_PATH, ignore_errors=True)
-    os.makedirs(TEMP_PATH)
-
-    _assign_region_colors()
     _prepare_atlas()
-
-    if args.viewer is True:
-        napari.run()
