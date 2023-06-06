@@ -65,7 +65,9 @@ def _load_atlas_data():
 def _select_background(args):
     slide_path = glob(os.path.join(args.data_dir, "tiff", "*.tif"))[0]
     bg.image = io.imread(slide_path)
-    bg.image = rescale(bg.image, 0.5, anti_aliasing=False, preserve_range=True) # scalling down image to reduce size
+
+    # scalle down bg image to reduce size
+    bg.image = rescale(bg.image, 0.5, anti_aliasing=False, preserve_range=True)
     bg.height, bg.width = int(bg.image.shape[0]), int(bg.image.shape[1])
     rect_y, rect_x = int(bg.height / 2) - 400, int(bg.width / 2) - 200
 
@@ -80,8 +82,11 @@ def _select_background(args):
     bg.napari_layer.add_rectangles(
         bg_rect, edge_width=10, edge_color="red", face_color="orange"
     )
-    bg.napari_layer.mode = 'SELECT' # Set the mode (tool) of the backgroud shape layer to "select"
-    bg.napari_layer.selected_data = [0] # Make active selection of the bacground rectangle
+
+    # Set the mode (tool) of the backgroud shape layer to "select"
+    bg.napari_layer.mode = "SELECT"
+    # Make active selection of the bacground rectangle
+    bg.napari_layer.selected_data = [0]
     bg.napari_dock = viewer.window.add_dock_widget(
         [calculate_bg_widget, start_alignment], name="Controls"
     )
@@ -299,9 +304,9 @@ def _polygons_to_roi() -> np.ndarray:
 def _analyze_roi():
     label_names, labels = _polygons_to_roi()
     all_regions = labels > 0
-    
+
     results_dict = {
-        'image_fname': section_image.fname,
+        "image_fname": section_image.fname,
     }
 
     # # create areas list and append total area covered by regions
@@ -325,9 +330,7 @@ def _analyze_roi():
     # On each iteration, check if the label region exists in the selected slice
     # according to the atlas. If it does and the region is on multiple polygons,
     # combine the labels as
-    
 
-    
     for region_name in results_data.region_names:
         if region_name in label_names:
             roi_mean = section_image.image[
@@ -347,7 +350,7 @@ def _analyze_roi():
             # bg_subtracted_means_per_pixel.append(np.nan)
             bg_subtracted_mean_per_pixel = np.nan
 
-    results_
+    # results_
 
 
 @magicgui(call_button="Calculate background")
@@ -490,5 +493,5 @@ if __name__ == "__main__":
     # configure napari
     viewer = napari.Viewer()
     _select_background(args)
-    
+
     napari.run()
