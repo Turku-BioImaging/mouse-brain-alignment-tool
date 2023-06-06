@@ -66,7 +66,7 @@ class SectionImage:
         self.name = os.path.basename(path)
 
 
-class ResultsData:
+class Results:
     region_names = None
     data = None
 
@@ -76,4 +76,19 @@ class ResultsData:
             data = json.load(f)
             self.region_names = ["All_ROIs"] + list(data.keys())
 
-        self.data = pd.DataFrame(columns=self.region_names)
+        self.data = pd.DataFrame(
+            columns=["image_filename"] + self.region_names,
+        )
+
+    def add_row(self, row: dict):
+        assert all(key in row for key in self.region_names + ["image_filename"])
+
+        if row["image_filename"] in self.data["image_filename"].values:
+            self.data.loc[
+                self.data["image_filename"] == row["image_filename"]
+            ] = row.values()
+
+        else:
+            self.data = self.data.append(row, ignore_index=True)
+
+    # def check_if_filename_exists:
