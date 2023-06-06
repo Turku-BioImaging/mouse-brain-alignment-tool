@@ -16,7 +16,6 @@ import numpy as np
 import shutil
 import shapely
 import random
-import napari
 import argparse
 import json
 import pandas as pd
@@ -51,8 +50,6 @@ SELECTED_REGIONS = (
     "CTXsp",
 )
 PAD_WIDTHS = ((0, 0), (140, 140), (72, 72))
-
-viewer = None
 
 
 def _check_files():
@@ -273,13 +270,8 @@ def _prepare_atlas():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--atlas-viewer", action="store_true")
-    parser.add_argument("--viewer", action="store_true")
     parser.add_argument("--force-download", action="store_true")
     args = parser.parse_args()
-
-    if args.viewer is True:
-        viewer = napari.Viewer()
 
     # configure atlas dir
     shutil.rmtree(ATLAS_PATH, ignore_errors=True)
@@ -291,6 +283,3 @@ if __name__ == "__main__":
 
     _assign_region_colors()
     _prepare_atlas()
-
-    if args.viewer is True:
-        napari.run()
