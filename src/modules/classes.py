@@ -1,5 +1,6 @@
 import numpy as np
 from skimage import io
+import os
 
 
 class Background:
@@ -50,8 +51,10 @@ class Atlas:
 class SectionImage:
     path = None
     image = None
+    name = None
     napari_layer = None
 
     def __init__(self, path: str):
         self.path = path
         self.image = io.imread(path)
+        self.name = os.path.basename(path)
