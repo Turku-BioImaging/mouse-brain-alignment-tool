@@ -286,11 +286,18 @@ def _get_mapped_labels(label_image: np.ndarray, names: list) -> np.ndarray:
 def _polygons_to_roi() -> np.ndarray:
     shapes_layer = atlas.napari_roi_shapes_layer
 
-    return shapes_layer.to_labels(labels_shape=section_image.image.shape)
+    labels = shapes_layer.to_labels(labels_shape=section_image.image.shape)
+    label_names = shapes_layer.text.string.array
+
+    label_names, labels = _get_mapped_labels(labels, label_names)
+
+    return label_names, labels
 
 
 def _analyze_roi():
-    labels = _polygons_to_roi()
+    label_names, labels = _polygons_to_roi()
+    print(label_names)
+    all_regions = labels > 0
 
     # all_regions = r > 0
     # areas = [sum(list(all_regions.flatten()))]  # first value for all active rois
