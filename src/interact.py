@@ -10,7 +10,7 @@ import shapely
 
 # import pandas as pd
 from magicgui import magicgui
-from modules.classes import Atlas, Background, ResultsData, SectionImage
+from modules.classes import Atlas, Background, Results, SectionImage
 
 # from skimage.morphology import remove_small_objects, binary_opening, area_closing
 # from skimage.segmentation import watershed
@@ -306,30 +306,20 @@ def _analyze_roi():
     all_regions = labels > 0
 
     results_dict = {
-        "image_fname": section_image.fname,
+        "image_filename": section_image.name,
     }
 
-    # # create areas list and append total area covered by regions
-    # areas = [np.count_nonzero(all_regions)]
+    # Measure and record values for combined ROIs
+    area = np.count_nonzero(all_regions)
+    mean = section_image.image[all_regions].mean()
 
-    # # create means list and append mean intensity of all regions
-    # # in the section image.
-    # # The first value is the mean intensity of the area covered by all regions
-    # means = [section_image.image[all_regions].mean()]
+    bg_subtracted_mean_per_pixel = None
+    if mean > bg.mean:
+        bg_subtracted_mean_per_pixel = (mean - bg.mean) / area
+    else:
+        bg_subtracted_mean_per_pixel = 0
 
-    # # Initialize list containing bg-subtracted means.
-    # # The first item is for the area covered by all regions
-    # bg_subtracted_means_per_pixel = []
-    # if means[0] > bg.mean:
-    #     item = (means[0] - bg.mean) / areas[0]
-    #     bg_subtracted_means_per_pixel.append(item)
-    # else:
-    #     bg_subtracted_means_per_pixel.append(0)
-
-    # Pair up region names and labels.
-    # On each iteration, check if the label region exists in the selected slice
-    # according to the atlas. If it does and the region is on multiple polygons,
-    # combine the labels as
+    results_dict["All_ROIs"] = bg_subtracted_mean_per_pixel
 
     for region_name in results_data.region_names:
         if region_name in label_names:
@@ -344,13 +334,12 @@ def _analyze_roi():
             bg_subtracted_mean_per_pixel = (
                 roi_mean - bg.mean if roi_mean > bg.mean else 0
             ) / area
-        else:
-            # means.append(np.nan)
-            # areas.append(np.nan)
-            # bg_subtracted_means_per_pixel.append(np.nan)
-            bg_subtracted_mean_per_pixel = np.nan
 
-    # results_
+            results_dict[region_name] = bg_subtracted_mean_per_pixel
+        else:
+            results_dict[region_name] = np.nan
+
+    results_data.add_row(results_dict)
 
 
 @magicgui(call_button="Calculate background")
@@ -481,7 +470,7 @@ if __name__ == "__main__":
     )
 
     ## init results data
-    results_data = ResultsData()
+    results_data = Results()
 
     # load first section image
     section_image_paths = sorted(glob(os.path.join(args.data_dir, "sections", "*.tif")))
