@@ -92,8 +92,6 @@ def _assign_region_colors():
         for a, _ in enumerate(SELECTED_REGIONS)
     }
 
-    with open(os.path.join(ATLAS_PATH, "roi_colors_dict.txt"), "w") as f:
-        f.write(str(roi_colors_dict))
 
     with open(os.path.join(ATLAS_PATH, "roi_colors.json"), "w") as f:
         json.dump(roi_colors_dict, f)
@@ -244,9 +242,6 @@ def _prepare_atlas():
                 region_dict[i["region"]] = i["polygons_list"]
 
             slice_region_dict[slice] = region_dict
-
-        with open(os.path.join(ATLAS_PATH, "roi_shapes_dict.txt"), "w") as f:
-            f.write(str(slice_region_dict))
 
         with open(os.path.join(ATLAS_PATH, "roi_shapes.json"), "w") as f:
             json.dump(slice_region_dict, f)
