@@ -31,7 +31,6 @@ from scipy import ndimage as ndi
 from tqdm import tqdm
 
 
-TEMP_PATH = "temp"
 ATLAS_PATH = os.path.join(os.path.dirname(__file__), "brain_atlas_files")
 SELECTED_ATLAS = "allen_mouse_100um"
 SELECTED_REGIONS = (
@@ -274,12 +273,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # configure atlas dir
-    shutil.rmtree(ATLAS_PATH, ignore_errors=True)
-    os.makedirs(ATLAS_PATH)
-
-    # configure temp dir
-    shutil.rmtree(TEMP_PATH, ignore_errors=True)
-    os.makedirs(TEMP_PATH)
+    if not os.path.isdir(ATLAS_PATH):
+        os.makedirs(ATLAS_PATH)
 
     _assign_region_colors()
     _prepare_atlas()
