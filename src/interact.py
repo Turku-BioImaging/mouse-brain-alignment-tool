@@ -261,6 +261,28 @@ def _hide_unselected_rois():
     atlas.napari_roi_shapes_layer.edge_color = edge_color  # transparent
 
 
+def _get_mapped_labels(label_image: np.ndarray, names: list) -> np.ndarray:
+    unique_names = list(set(names))
+
+    mapping_dict = {}
+    for name in unique_names:
+        matching_indices = [
+            index + 1 for index, element in enumerate(names) if element == name
+        ]
+
+        mapping_dict[name] = matching_indices
+
+    mapped_label_image = np.copy(label_image)
+
+    for idx, name in enumerate(unique_names):
+        label_values = mapping_dict[name]
+
+        for v in label_values:
+            mapped_label_image[label_image == v] = idx + 1
+
+    return unique_names, mapped_label_image
+
+
 def _polygons_to_roi() -> np.ndarray:
     shapes_layer = atlas.napari_roi_shapes_layer
 
