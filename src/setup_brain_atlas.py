@@ -11,25 +11,23 @@ Turku PET Centre, University of Turku, Finland
 Turku BioImaging, University of Turku and Åbo Akademi University, Finland
 """
 
-import os
-import numpy as np
-import shutil
-import shapely
-import random
 import argparse
 import json
-import pandas as pd
 import multiprocessing as mp
+import os
+import random
 
+import numpy as np
+import pandas as pd
+import shapely
 from bg_atlasapi import BrainGlobeAtlas as bga
-from skimage.morphology import remove_small_objects
-from skimage.measure import label, regionprops
-from skimage.transform import rescale
-from skimage import io
-from rasterio import features, Affine
+from rasterio import Affine, features
 from scipy import ndimage as ndi
+from skimage import io
+from skimage.measure import label, regionprops
+from skimage.morphology import remove_small_objects
+from skimage.transform import rescale
 from tqdm import tqdm
-
 
 ATLAS_PATH = os.path.join(os.path.dirname(__file__), "brain_atlas_files")
 SELECTED_ATLAS = "allen_mouse_100um"
