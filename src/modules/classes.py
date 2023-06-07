@@ -72,7 +72,7 @@ class Results:
     data_path = None
 
     def __init__(self, data_dir: str = None):
-        # init region names
+        # init dataframe or load from csv
         with open(os.path.join(ATLAS_DIR, "roi_colors.json")) as f:
             data = json.load(f)
             self.region_names = ["All_ROIs"] + list(data.keys())
@@ -93,7 +93,8 @@ class Results:
             ] = row.values()
 
         else:
-            self.data = self.data.append(row, ignore_index=True)
+            new_row = pd.DataFrame([row])
+            self.data = pd.concat([self.data, new_row], ignore_index=True)
 
         self.data.to_csv(self.data_path, index=False)
 
