@@ -7,18 +7,9 @@ import napari
 import numpy as np
 import pandas as pd
 import shapely
-
-# import pandas as pd
 from magicgui import magicgui
 from modules.classes import Atlas, Background, Results, SectionImage
-
-# from skimage.morphology import remove_small_objects, binary_opening, area_closing
-# from skimage.segmentation import watershed
-# from skimage.feature import peak_local_max
-# from skimage.measure import label, regionprops
 from scipy import ndimage as ndi
-
-# from skimage.filters import median, threshold_otsu
 from skimage import filters, img_as_ubyte, io, measure, morphology
 from skimage.transform import rescale
 
@@ -132,7 +123,6 @@ def _initialize_analysis_tool():
         [
             atlas_view_widget,
             rois_widget,
-            simplify_rois_widget,
             hide_widget,
             analyze_widget,
             next_image_widget,
@@ -363,11 +353,6 @@ def rois_widget():
     _load_selected_rois()
 
 
-@magicgui(call_button="Simplify ROIs")
-def simplify_rois_widget():
-    _load_selected_rois(simplification=4)
-
-
 @magicgui(call_button="Hide unselected rois")
 def hide_widget():
     _hide_unselected_rois()
@@ -376,7 +361,6 @@ def hide_widget():
 @magicgui(call_button="Analyze rois")
 def analyze_widget():
     _analyze_roi()
-    # print("Analyze rois")
 
 
 @magicgui(call_button="Brain Atlas")
