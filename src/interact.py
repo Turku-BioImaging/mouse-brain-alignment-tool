@@ -414,8 +414,8 @@ def next_image_widget():
             viewer.layers.remove("section_image")
         section_image_paths_index += 1
         section_image = SectionImage(section_image_paths[section_image_paths_index])
-
-        section_image.image = _align_centroids()
+        if "atlas_rois" in viewer.layers:
+            section_image.image = _align_centroids()
         section_image.napari_layer = viewer.add_image(
             section_image.image, name="section_image", colormap="gray_r"
         )
@@ -426,6 +426,8 @@ def next_image_widget():
             pass
         else:
             viewer.layers.reverse()
+            viewer.layers.selection.active = atlas.napari_roi_shapes_layer
+            atlas.napari_roi_shapes_layer.mode = "SELECT"
 
 
 @magicgui(call_button="Previous image")
@@ -440,7 +442,8 @@ def previous_image_widget():
             viewer.layers.remove("section_image")
         section_image_paths_index -= 1
         section_image = SectionImage(section_image_paths[section_image_paths_index])
-        section_image.image = _align_centroids()
+        if "atlas_rois" in viewer.layers:
+            section_image.image = _align_centroids()
         section_image.napari_layer = viewer.add_image(
             section_image.image, name="section_image", colormap="gray_r"
         )
@@ -451,6 +454,9 @@ def previous_image_widget():
             pass
         else:
             viewer.layers.reverse()
+            viewer.layers.selection.active = atlas.napari_roi_shapes_layer
+            atlas.napari_roi_shapes_layer.mode = "SELECT"
+
 
 
 if __name__ == "__main__":
