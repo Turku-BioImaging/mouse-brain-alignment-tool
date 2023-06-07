@@ -236,8 +236,12 @@ def _convert_to_multipolygon(mask: np.ndarray):
             for i in item:
                 polygons.append(i)
 
-    multi_polygon = shapely.geometry.MultiPolygon(polygons)
-    # print(multi_polygon)
+    # simplify the polygons to reduce vertices
+    simplified_polygons = []
+    for poly in polygons:
+        simplified_polygons.append(poly.simplify(tolerance=4))
+
+    multi_polygon = shapely.geometry.MultiPolygon(simplified_polygons)
     return multi_polygon
 
 
