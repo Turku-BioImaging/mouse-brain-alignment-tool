@@ -325,14 +325,14 @@ def _analyze_roi():
     results_dict["All_ROIs"] = bg_subtracted_mean_per_pixel
 
     for region_name in results_data.region_names:
+        if region_name == "All_ROIs":
+            continue
         if region_name in label_names:
             roi_mean = section_image.image[
                 labels == label_names.index(region_name)
             ].mean()
-            # means.append(roi_mean)
 
             area = np.count_nonzero(labels == label_names.index(region_name))
-            # areas.append(area)
 
             bg_subtracted_mean_per_pixel = (
                 roi_mean - bg.mean if roi_mean > bg.mean else 0
@@ -420,8 +420,8 @@ def next_image_widget():
             section_image.image, name="section_image", colormap="gray_r"
         )
 
-        image_name_widget.update(IMG = section_image.name)
-        
+        image_name_widget.update(IMG=section_image.name)
+
         if len(viewer.layers) == 3:
             pass
         else:
@@ -445,7 +445,7 @@ def previous_image_widget():
             section_image.image, name="section_image", colormap="gray_r"
         )
 
-        image_name_widget.update(IMG = section_image.name) 
+        image_name_widget.update(IMG=section_image.name)
 
         if len(viewer.layers) == 3:
             pass
@@ -485,8 +485,7 @@ if __name__ == "__main__":
     assert len(section_image_paths) > 0
     _load_section_image(section_image_paths[0])
 
-
-    @magicgui(call_button=' ')
+    @magicgui(call_button=" ")
     def image_name_widget(IMG: str = section_image.name, analyzed: bool = False):
         pass
 
