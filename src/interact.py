@@ -132,7 +132,6 @@ def _initialize_analysis_tool():
         [
             atlas_view_widget,
             rois_widget,
-            simplify_rois_widget,
             hide_widget,
             analyze_widget,
             next_image_widget,
@@ -363,11 +362,6 @@ def rois_widget():
     _load_selected_rois()
 
 
-@magicgui(call_button="Simplify ROIs")
-def simplify_rois_widget():
-    _load_selected_rois(simplification=4)
-
-
 @magicgui(call_button="Hide unselected rois")
 def hide_widget():
     _hide_unselected_rois()
@@ -376,7 +370,6 @@ def hide_widget():
 @magicgui(call_button="Analyze rois")
 def analyze_widget():
     _analyze_roi()
-    # print("Analyze rois")
 
 
 @magicgui(call_button="Brain Atlas")
