@@ -150,62 +150,30 @@ def _save_slice_centroids(bg_atlas: bga, n_slices: int):
 #             json.dump(slice_region_dict, f)
 
 
-
 def _save_roi_shapes(n_slices: int):
     print("Converting atlas ROIs to polygons...")
-    slice_region_dict = {}
+    with mp.Pool(mp.cpu_count()) as pool:
+        slice_region_dict = {}
 
-    for slice in tqdm(range(n_slices)):
-        region_dict = {}
+        for slice in tqdm(range(n_slices)):
+            region_dict = {}
 
+            async_results = [
+                pool.apply_async(
+                    _convert_slice_region_to_multipolygons, args=(slice, r)
+                )
+                for r in SELECTED_REGIONS
+            ]
 
-        
-        results = []
-        for r in SELECTED_REGIONS:
-            polygon = _convert_slice_region_to_multipolygons(slice, r)
-            results.append(polygon)
-            
-        [print(p) for p in results]
-        break
+            results = [arg.get() for arg in async_results]
 
-        for i in results:
-            region_dict[i["region"]] = i["polygons_list"]
+            for i in results:
+                region_dict[i["region"]] = i["polygons_list"]
 
-        slice_region_dict[slice] = region_dict
+            slice_region_dict[slice] = region_dict
 
-    with open(os.path.join(ATLAS_PATH, "roi_shapes.json"), "w") as f:
-        json.dump(slice_region_dict, f)
-
-
-# def mask_to_polygons(mask):
-#     all_polygons = []
-
-#     for shape, _ in features.shapes(
-#         mask.astype(np.int16),
-#         mask=(mask > 0),
-#         transform=Affine(1.0, 0, 0, 0, 1.0, 0),
-#     ):
-#         all_polygons.append(shapely.geometry.shape(shape))
-
-#     all_polygons = shapely.geometry.MultiPolygon(all_polygons)
-
-#     if not all_polygons.is_valid:
-#         all_polygons = all_polygons.buffer(0)
-
-#     if all_polygons.geom_type == "Polygon":
-#         all_polygons = shapely.geometry.MultiPolygon([all_polygons])
-
-#     return all_polygons
-
-def _convert_to_multipolygon(mask: np.ndarray):
-    polygons = []
-    mask = mask.astype(bool)
-    boundary = mask != np.roll(mask, 1, axis=0)
-    for region in shapely.polygonize(boundary):
-        if not region.is_empty and mask[int(region.centroid[1]), int(region.centroid[0])]:
-            polygons.append(region)
-            
-    return shapely.geometry.MultiPolygon(polygons)
+        with open(os.path.join(ATLAS_PATH, "roi_shapes.json"), "w") as f:
+            json.dump(slice_region_dict, f)
 
 
 def _assign_region_colors():
@@ -228,7 +196,52 @@ def _assign_region_colors():
         json.dump(roi_colors_dict, f)
 
 
-def shapely_shaper(region, slice):
+# def mask_to_polygons(mask):
+#     all_polygons = []
+
+#     for shape, _ in features.shapes(
+#         mask.astype(np.int16),
+#         mask=(mask > 0),
+#         transform=Affine(1.0, 0, 0, 0, 1.0, 0),
+#     ):
+#         all_polygons.append(shapely.geometry.shape(shape))
+
+#     all_polygons = shapely.geometry.MultiPolygon(all_polygons)
+
+#     if not all_polygons.is_valid:
+#         all_polygons = all_polygons.buffer(0)
+
+#     if all_polygons.geom_type == "Polygon":
+#         all_polygons = shapely.geometry.MultiPolygon([all_polygons])
+
+#     return all_polygons
+
+
+def _convert_to_multipolygon(mask: np.ndarray):
+    shape_results = []
+
+    for shape, _ in features.shapes(
+        mask.astype(np.int16),
+        mask=(mask > 0),
+        transform=Affine(1.0, 0, 0, 0, 1.0, 0),
+    ):
+        shape_results.append(shapely.geometry.shape(shape))
+
+    # print(shape_results)
+    polygons = []
+    for item in shape_results:
+        if item.geom_type == "Polygon":
+            polygons.append(item)
+        elif item.geom_type == "MultiPolygon":
+            for i in item:
+                polygons.append(i)
+
+    multi_polygon = shapely.geometry.MultiPolygon(polygons)
+    # print(multi_polygon)
+    return multi_polygon
+
+
+def _shapely_shaper(region, slice):
     roi_t = bga(SELECTED_ATLAS).get_structure_mask(region)
 
     slice_t = roi_t[slice]
@@ -252,7 +265,7 @@ def shapely_shaper(region, slice):
 
 
 def _convert_slice_region_to_multipolygons(slice: int, region: str):
-    region_polygon = shapely_shaper(region, slice)
+    region_polygon = _shapely_shaper(region, slice)
 
     polygons_list = []
 
@@ -267,6 +280,7 @@ def _convert_slice_region_to_multipolygons(slice: int, region: str):
                 ).tolist()
             )
 
+    print(polygons_list)
     return {"region": region, "polygons_list": polygons_list}
 
 
