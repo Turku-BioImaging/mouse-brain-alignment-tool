@@ -134,6 +134,7 @@ def _initialize_analysis_tool():
             rois_widget,
             simplify_rois_widget,
             hide_widget,
+            show_all_widget,
             analyze_widget,
             next_image_widget,
             previous_image_widget,
@@ -271,6 +272,24 @@ def _hide_unselected_rois():
     atlas.napari_roi_shapes_layer.edge_color = edge_color  # transparent
 
 
+def _show_all_rois():
+    roi_names = atlas.napari_roi_shapes_layer.text.string.array
+    color_array = []
+    edge_color = []
+    for i in range(atlas.napari_roi_shapes_layer.nshapes):
+        rgb_values = atlas.roi_colors_dict[roi_names[i]][1][:-1]
+        opacity_value = atlas.roi_colors_dict[roi_names[i]][1][-1]
+
+        rgb_floats = []
+        for i in rgb_values:
+            rgb_floats.append(i / 255.0)
+        
+        color_array.append(rgb_floats + [opacity_value])
+        edge_color.append([1.0, 0.0, 0.0, 1.0])
+    atlas.napari_roi_shapes_layer.face_color = color_array
+    atlas.napari_roi_shapes_layer.edge_color = edge_color
+
+
 def _get_mapped_labels(label_image: np.ndarray, names: list) -> np.ndarray:
     unique_names = list(set(names))
 
@@ -372,6 +391,9 @@ def simplify_rois_widget():
 def hide_widget():
     _hide_unselected_rois()
 
+@magicgui(call_button="Show all rois")
+def show_all_widget():
+    _show_all_rois()
 
 @magicgui(call_button="Analyze rois")
 def analyze_widget():
