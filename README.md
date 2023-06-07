@@ -9,3 +9,13 @@ Processing of autoradiography (ARG) images from mouse brain tissue. This project
     </tr>
   </tbody>
 </table>
+
+## Developers / Contributors
+The dependencies are still in a fluid state. If there are any changes in the `environment.yml`, please update your mamba/conda environment:
+```
+mamba env update -f environment.yml --prune
+
+OR
+
+conda env update -f environment.yml --prune
+```
