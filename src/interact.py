@@ -124,6 +124,7 @@ def _initialize_analysis_tool():
             atlas_view_widget,
             rois_widget,
             hide_widget,
+            show_all_widget,
             analyze_widget,
             next_image_widget,
             previous_image_widget,
@@ -261,6 +262,24 @@ def _hide_unselected_rois():
     atlas.napari_roi_shapes_layer.edge_color = edge_color  # transparent
 
 
+def _show_all_rois():
+    roi_names = atlas.napari_roi_shapes_layer.text.string.array
+    color_array = []
+    edge_color = []
+    for i in range(atlas.napari_roi_shapes_layer.nshapes):
+        rgb_values = atlas.roi_colors_dict[roi_names[i]][1][:-1]
+        opacity_value = atlas.roi_colors_dict[roi_names[i]][1][-1]
+
+        rgb_floats = []
+        for i in rgb_values:
+            rgb_floats.append(i / 255.0)
+        
+        color_array.append(rgb_floats + [opacity_value])
+        edge_color.append([1.0, 0.0, 0.0, 1.0])
+    atlas.napari_roi_shapes_layer.face_color = color_array
+    atlas.napari_roi_shapes_layer.edge_color = edge_color
+
+
 def _get_mapped_labels(label_image: np.ndarray, names: list) -> np.ndarray:
     unique_names = list(set(names))
 
@@ -357,6 +376,9 @@ def rois_widget():
 def hide_widget():
     _hide_unselected_rois()
 
+@magicgui(call_button="Show all rois")
+def show_all_widget():
+    _show_all_rois()
 
 @magicgui(call_button="Analyze rois")
 def analyze_widget():
@@ -398,8 +420,11 @@ def next_image_widget():
             viewer.layers.remove("section_image")
         section_image_paths_index += 1
         section_image = SectionImage(section_image_paths[section_image_paths_index])
-
-        section_image.image = _align_centroids()
+        if "atlas_rois" in viewer.layers:
+            if viewer.dims.current_step[0] == 0:
+                pass
+            else:
+                section_image.image = _align_centroids()
         section_image.napari_layer = viewer.add_image(
             section_image.image, name="section_image", colormap="gray_r"
         )
@@ -410,6 +435,8 @@ def next_image_widget():
             pass
         else:
             viewer.layers.reverse()
+            viewer.layers.selection.active = atlas.napari_roi_shapes_layer
+            atlas.napari_roi_shapes_layer.mode = "SELECT"
 
 
 @magicgui(call_button="Previous image")
@@ -424,7 +451,11 @@ def previous_image_widget():
             viewer.layers.remove("section_image")
         section_image_paths_index -= 1
         section_image = SectionImage(section_image_paths[section_image_paths_index])
-        section_image.image = _align_centroids()
+        if "atlas_rois" in viewer.layers:
+            if viewer.dims.current_step[0] == 0:
+                pass
+            else:
+                section_image.image = _align_centroids()
         section_image.napari_layer = viewer.add_image(
             section_image.image, name="section_image", colormap="gray_r"
         )
@@ -435,6 +466,9 @@ def previous_image_widget():
             pass
         else:
             viewer.layers.reverse()
+            viewer.layers.selection.active = atlas.napari_roi_shapes_layer
+            atlas.napari_roi_shapes_layer.mode = "SELECT"
+
 
 
 if __name__ == "__main__":
