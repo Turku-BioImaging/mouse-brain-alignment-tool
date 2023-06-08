@@ -19,11 +19,6 @@ ATLAS_DIR = os.path.join(os.path.dirname(__file__), "brain_atlas_files")
 global viewer, bg, atlas, section_image, section_image_paths, results_data
 
 
-def _load_section_image(path: int):
-    global section_image
-    section_image = SectionImage(path)
-
-
 def _load_atlas_data():
     anatomical_atlas = io.imread(os.path.join(ATLAS_DIR, "anatomical_atlas.tif"))
     rois = io.imread(os.path.join(ATLAS_DIR, "rois_atlas.tif"))
@@ -132,7 +127,6 @@ def _initialize_analysis_tool():
         ]
     )
     image_name_widget.enabled = False
-    # image_name_widget.update(analyzed = ) # set value as True or False based on dataframe with results
 
     viewer.reset_view()
 
@@ -273,7 +267,7 @@ def _show_all_rois():
         rgb_floats = []
         for i in rgb_values:
             rgb_floats.append(i / 255.0)
-        
+
         color_array.append(rgb_floats + [opacity_value])
         edge_color.append([1.0, 0.0, 0.0, 1.0])
     atlas.napari_roi_shapes_layer.face_color = color_array
@@ -376,9 +370,11 @@ def rois_widget():
 def hide_widget():
     _hide_unselected_rois()
 
+
 @magicgui(call_button="Show all rois")
 def show_all_widget():
     _show_all_rois()
+
 
 @magicgui(call_button="Analyze rois")
 def analyze_widget():
@@ -420,13 +416,20 @@ def next_image_widget():
             viewer.layers.remove("section_image")
         section_image_paths_index += 1
         section_image = SectionImage(section_image_paths[section_image_paths_index])
+
         if "atlas_rois" in viewer.layers:
             if viewer.dims.current_step[0] == 0:
                 pass
             else:
                 section_image.image = _align_centroids()
+
+        if results_data.image_is_analyzed(section_image.name):
+            colormap = "green"
+        else:
+            colormap = "gray_r"
+
         section_image.napari_layer = viewer.add_image(
-            section_image.image, name="section_image", colormap="gray_r"
+            section_image.image, name="section_image", colormap=colormap
         )
 
         image_name_widget.update(IMG=section_image.name)
@@ -451,13 +454,25 @@ def previous_image_widget():
             viewer.layers.remove("section_image")
         section_image_paths_index -= 1
         section_image = SectionImage(section_image_paths[section_image_paths_index])
+
         if "atlas_rois" in viewer.layers:
             if viewer.dims.current_step[0] == 0:
                 pass
             else:
                 section_image.image = _align_centroids()
+        if "atlas_rois" in viewer.layers:
+            if viewer.dims.current_step[0] == 0:
+                pass
+            else:
+                section_image.image = _align_centroids()
+
+        if results_data.image_is_analyzed(section_image.name):
+            colormap = "green"
+        else:
+            colormap = "gray_r"
+
         section_image.napari_layer = viewer.add_image(
-            section_image.image, name="section_image", colormap="gray_r"
+            section_image.image, name="section_image", colormap=colormap
         )
 
         image_name_widget.update(IMG=section_image.name)
@@ -468,7 +483,6 @@ def previous_image_widget():
             viewer.layers.reverse()
             viewer.layers.selection.active = atlas.napari_roi_shapes_layer
             atlas.napari_roi_shapes_layer.mode = "SELECT"
-
 
 
 if __name__ == "__main__":
@@ -501,7 +515,7 @@ if __name__ == "__main__":
     # load first section image
     section_image_paths = sorted(glob(os.path.join(args.data_dir, "sections", "*.tif")))
     assert len(section_image_paths) > 0
-    _load_section_image(section_image_paths[0])
+    section_image = SectionImage(section_image_paths[0])
 
     @magicgui(call_button=" ")
     def image_name_widget(IMG: str = section_image.name, analyzed: bool = False):
