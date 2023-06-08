@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>611</width>
-    <height>509</height>
+    <height>609</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -329,6 +329,37 @@
     </rect>
    </property>
   </widget>
+  <widget class="QLabel" name="log_textbox_label">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>430</y>
+     <width>131</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>11</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Log:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </widget>
+  <widget class="QTextEdit" name="log_textbox">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>470</y>
+     <width>300</width>
+     <height>70</height>
+    </rect>
+   </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+  </widget>
   <zorder>group_slides</zorder>
   <zorder>group_num_animals</zorder>
   <zorder>image_fname_textbox</zorder>
@@ -340,6 +371,8 @@
   <zorder>output_directory_label</zorder>
   <zorder>select_output_directory</zorder>
   <zorder>output_directory_textbox</zorder>
+  <zorder>log_textbox_label</zorder>
+  <zorder>log_textbox</zorder>
  </widget>
  <resources/>
  <connections/>
