@@ -379,6 +379,7 @@ def show_all_widget():
 @magicgui(call_button="Analyze rois")
 def analyze_widget():
     _analyze_roi()
+    image_name_widget.update(analyzed=True)
 
 
 @magicgui(call_button="Brain Atlas")
@@ -425,8 +426,10 @@ def next_image_widget():
 
         if results_data.image_is_analyzed(section_image.name):
             colormap = "green"
+            image_name_widget.update(analyzed=True)
         else:
             colormap = "gray_r"
+            image_name_widget.update(analyzed=False)
 
         section_image.napari_layer = viewer.add_image(
             section_image.image, name="section_image", colormap=colormap
@@ -468,8 +471,10 @@ def previous_image_widget():
 
         if results_data.image_is_analyzed(section_image.name):
             colormap = "green"
+            image_name_widget.update(analyzed=True)
         else:
             colormap = "gray_r"
+            image_name_widget.update(analyzed=False)
 
         section_image.napari_layer = viewer.add_image(
             section_image.image, name="section_image", colormap=colormap
@@ -517,7 +522,7 @@ if __name__ == "__main__":
     assert len(section_image_paths) > 0
     section_image = SectionImage(section_image_paths[0])
 
-    @magicgui(call_button=" ")
+    @magicgui(call_button="")
     def image_name_widget(IMG: str = section_image.name, analyzed: bool = False):
         pass
 
