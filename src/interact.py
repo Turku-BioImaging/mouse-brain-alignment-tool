@@ -421,7 +421,10 @@ def next_image_widget():
         section_image_paths_index += 1
         section_image = SectionImage(section_image_paths[section_image_paths_index])
         if "atlas_rois" in viewer.layers:
-            section_image.image = _align_centroids()
+            if viewer.dims.current_step[0] == 0:
+                pass
+            else:
+                section_image.image = _align_centroids()
         section_image.napari_layer = viewer.add_image(
             section_image.image, name="section_image", colormap="gray_r"
         )
@@ -449,7 +452,10 @@ def previous_image_widget():
         section_image_paths_index -= 1
         section_image = SectionImage(section_image_paths[section_image_paths_index])
         if "atlas_rois" in viewer.layers:
-            section_image.image = _align_centroids()
+            if viewer.dims.current_step[0] == 0:
+                pass
+            else:
+                section_image.image = _align_centroids()
         section_image.napari_layer = viewer.add_image(
             section_image.image, name="section_image", colormap="gray_r"
         )
