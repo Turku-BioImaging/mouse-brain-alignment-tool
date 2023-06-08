@@ -72,17 +72,31 @@ class Results:
     data_path = None
 
     def __init__(self, data_dir: str = None):
-        # init region names
+        # init dataframe or load from csv
         with open(os.path.join(ATLAS_DIR, "roi_colors.json")) as f:
             data = json.load(f)
             self.region_names = ["All_ROIs"] + list(data.keys())
 
-        self.data = pd.DataFrame(
-            columns=["image_filename"] + self.region_names,
-        )
-
         assert os.path.isdir(data_dir)
         self.data_path = os.path.join(data_dir, "results.csv")
+        self._init_data()
+
+    def _init_data(self):
+        # check if csv exists
+        # check that column headers are correct
+        # load into dataframe
+        if os.path.isfile(self.data_path):
+            read_data = pd.read_csv(self.data_path)
+            expected_columns = ["image_filename"] + self.region_names
+            if read_data.columns.to_list() == expected_columns:
+                self.data = read_data
+            else:
+                self.data = pd.DataFrame(columns=["image_filename"] + self.region_names)
+
+        # else init a new empty dataframe and save to csv
+        else:
+            self.data = pd.DataFrame(columns=["image_filename"] + self.region_names)
+            self.data.to_csv(self.data_path, index=False)
 
     def add_row(self, row: dict):
         assert all(key in row for key in self.region_names + ["image_filename"])
@@ -93,7 +107,9 @@ class Results:
             ] = row.values()
 
         else:
-            self.data = self.data.append(row, ignore_index=True)
+            new_row = pd.DataFrame([row])
+            self.data = pd.concat([self.data, new_row], ignore_index=True)
+            self.data = self.data.sort_values("image_filename")
 
         self.data.to_csv(self.data_path, index=False)
 

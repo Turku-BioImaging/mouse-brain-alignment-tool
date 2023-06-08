@@ -7,18 +7,9 @@ import napari
 import numpy as np
 import pandas as pd
 import shapely
-
-# import pandas as pd
 from magicgui import magicgui
 from modules.classes import Atlas, Background, Results, SectionImage
-
-# from skimage.morphology import remove_small_objects, binary_opening, area_closing
-# from skimage.segmentation import watershed
-# from skimage.feature import peak_local_max
-# from skimage.measure import label, regionprops
 from scipy import ndimage as ndi
-
-# from skimage.filters import median, threshold_otsu
 from skimage import filters, img_as_ubyte, io, measure, morphology
 from skimage.transform import rescale
 
@@ -132,7 +123,6 @@ def _initialize_analysis_tool():
         [
             atlas_view_widget,
             rois_widget,
-            simplify_rois_widget,
             hide_widget,
             show_all_widget,
             analyze_widget,
@@ -344,14 +334,14 @@ def _analyze_roi():
     results_dict["All_ROIs"] = bg_subtracted_mean_per_pixel
 
     for region_name in results_data.region_names:
+        if region_name == "All_ROIs":
+            continue
         if region_name in label_names:
             roi_mean = section_image.image[
                 labels == label_names.index(region_name)
             ].mean()
-            # means.append(roi_mean)
 
             area = np.count_nonzero(labels == label_names.index(region_name))
-            # areas.append(area)
 
             bg_subtracted_mean_per_pixel = (
                 roi_mean - bg.mean if roi_mean > bg.mean else 0
@@ -382,11 +372,6 @@ def rois_widget():
     _load_selected_rois()
 
 
-@magicgui(call_button="Simplify ROIs")
-def simplify_rois_widget():
-    _load_selected_rois(simplification=4)
-
-
 @magicgui(call_button="Hide unselected rois")
 def hide_widget():
     _hide_unselected_rois()
@@ -398,7 +383,6 @@ def show_all_widget():
 @magicgui(call_button="Analyze rois")
 def analyze_widget():
     _analyze_roi()
-    # print("Analyze rois")
 
 
 @magicgui(call_button="Brain Atlas")
@@ -442,8 +426,8 @@ def next_image_widget():
             section_image.image, name="section_image", colormap="gray_r"
         )
 
-        image_name_widget.update(IMG = section_image.name)
-        
+        image_name_widget.update(IMG=section_image.name)
+
         if len(viewer.layers) == 3:
             pass
         else:
@@ -470,7 +454,7 @@ def previous_image_widget():
             section_image.image, name="section_image", colormap="gray_r"
         )
 
-        image_name_widget.update(IMG = section_image.name) 
+        image_name_widget.update(IMG=section_image.name)
 
         if len(viewer.layers) == 3:
             pass
@@ -513,8 +497,7 @@ if __name__ == "__main__":
     assert len(section_image_paths) > 0
     _load_section_image(section_image_paths[0])
 
-
-    @magicgui(call_button=' ')
+    @magicgui(call_button=" ")
     def image_name_widget(IMG: str = section_image.name, analyzed: bool = False):
         pass
 
