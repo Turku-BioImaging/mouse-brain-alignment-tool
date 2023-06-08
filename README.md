@@ -28,3 +28,10 @@ pyinstaller --onefile --windowed setup_ui.py \
   --add-data "gui;gui"
   --name preprocess
 ```
+
+_analyze.exe_
+```
+pyinstaller --onefile --windowed interact.py \
+  --add-data "brain_atlas_files;brain_atlas_files"
+  --name analyze
+```
