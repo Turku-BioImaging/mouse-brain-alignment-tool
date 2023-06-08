@@ -20,9 +20,9 @@ conda env update -f environment.yml --prune
 ```
 
 ### Build
-The build process depends on [PyInstaller](https://pyinstaller.org). In the local environment `pip install pyinstaller`.
-__preprocess.exe__  
-
+The build process depends on [PyInstaller](https://pyinstaller.org). In the local environment `pip install pyinstaller`.  
+  
+_preprocess.exe_
 ```
 pyinstaller --onefile --windowed setup_ui.py \
   --add-data "gui;gui"
