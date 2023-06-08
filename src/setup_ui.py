@@ -31,7 +31,9 @@ class MainWindow(QDialog):
 
         self.select_output_directory.clicked.connect(self.set_output_dir)
 
+        self.process.clicked.connect(self.print_output1)
         self.process.clicked.connect(self.run)
+        self.process.clicked.connect(self.print_output2)
 
     def set_slide_count(self):
         if self.num_slides_1.isChecked() is True:
@@ -62,6 +64,15 @@ class MainWindow(QDialog):
     def set_output_dir(self):
         self.output_dir = QFileDialog.getExistingDirectory(self, "Select Directory")
         self.output_directory_textbox.setText(self.output_dir)
+
+    def print_output1(self):
+        self.log_textbox.append(f'File: {os.path.basename(self.image_fname)}')
+        self.log_textbox.append("Running preprocessing...")
+        QApplication.processEvents()
+
+    def print_output2(self):
+        self.log_textbox.append("Finished!")
+        self.log_textbox.append("")
 
     def run(self):
         script_path = os.path.join(

@@ -214,6 +214,6 @@ if __name__ == "__main__":
     for i in workdir_contents:
         source = os.path.join(WORKDIR, i)
         dest = os.path.join(args.output_dir, i)
-        shutil.copytree(source, dest)
+        shutil.copytree(source, dest, dirs_exist_ok=True)
         
     shutil.rmtree(WORKDIR)
