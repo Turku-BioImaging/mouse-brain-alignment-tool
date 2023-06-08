@@ -113,4 +113,9 @@ class Results:
 
         self.data.to_csv(self.data_path, index=False)
 
-    # def check_if_filename_exists:
+    def image_is_analyzed(self, image_filename: str) -> bool:
+        
+        if image_filename in self.data['image_filename'].values:
+            return True
+        
+        return False
