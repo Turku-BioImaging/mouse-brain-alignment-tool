@@ -11,11 +11,27 @@ Processing of autoradiography (ARG) images from mouse brain tissue. This project
 </table>
 
 ## Developers / Contributors
-The dependencies are still in a fluid state. If there are any changes in the `environment.yml`, please update your mamba/conda environment:
+
+### Environments
+We use the mamba or conda package manager. If there are any changes in the `environment.yml`, please update your environment using one of the following lines:
 ```
 mamba env update -f environment.yml --prune
-
-OR
-
 conda env update -f environment.yml --prune
+```
+
+### Build
+The build process depends on [PyInstaller](https://pyinstaller.org). In the local environment `pip install pyinstaller`.  
+  
+_preprocess.exe_
+```
+pyinstaller --onefile --windowed setup_ui.py \
+  --add-data "gui;gui"
+  --name preprocess
+```
+
+_analyze.exe_
+```
+pyinstaller --onefile --windowed interact.py \
+  --add-data "brain_atlas_files;brain_atlas_files"
+  --name analyze
 ```
