@@ -172,8 +172,9 @@ def _align_centroids():
 
 
 def _load_selected_rois(simplification: int = 0):
-    selected_slice = int(viewer.dims.current_step[0])
-    atlas.selected_slice = selected_slice
+    if "atlas_rois" in viewer.layers:
+        selected_slice = int(viewer.dims.current_step[0])
+        atlas.selected_slice = selected_slice
 
     viewer.grid.enabled = False
     viewer.layers.select_all()
@@ -189,8 +190,8 @@ def _load_selected_rois(simplification: int = 0):
     shapes_layer = atlas.napari_roi_shapes_layer
     colors_dict = atlas.roi_colors_dict
 
-    for roi in atlas.roi_shapes_dict[str(selected_slice)]:
-        polygon_list_coords = atlas.roi_shapes_dict[str(selected_slice)][roi]
+    for roi in atlas.roi_shapes_dict[str(atlas.selected_slice)]:
+        polygon_list_coords = atlas.roi_shapes_dict[str(atlas.selected_slice)][roi]
         polygon_simplified = _simplify_polygons(polygon_list_coords, simplification)
 
         if len(polygon_list_coords) > 0:
