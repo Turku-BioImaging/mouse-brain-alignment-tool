@@ -304,6 +304,17 @@ def _polygons_to_roi() -> np.ndarray:
     label_names = shapes_layer.text.string.array
 
     label_names, labels = _get_mapped_labels(labels, label_names)
+    # here add background so that the label indices match
+    label_names = ["bg"] + label_names
+
+    # [print(lbl) for lbl in label_names]
+    # [print(i) for i in np.unique(labels)]
+    # for i in np.unique(labels):
+    #     if i > 0:
+    #         lbl = labels == i
+    #         viewer.add_image(
+    #             lbl.astype(np.uint8), name=label_names[i - 1], colormap="turbo"
+    #         )
 
     return label_names, labels
 
@@ -328,10 +339,16 @@ def _analyze_roi():
 
     results_dict["All_ROIs"] = bg_subtracted_mean_per_pixel
 
+    # [print(i) for i in label_names]
+    # print("\n")
+
     for region_name in results_data.region_names:
         if region_name == "All_ROIs":
             continue
         if region_name in label_names:
+            # print('region_name: ', region_name)
+            # print('label_name_index: ', label_names.index(region_name))
+            # print("\n")
             roi_mean = section_image.image[
                 labels == label_names.index(region_name)
             ].mean()
