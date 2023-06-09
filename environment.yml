@@ -17,5 +17,5 @@ dependencies:
   - pip:
     - bg-atlasapi==1.0.2
     # - napari[all]==0.4.17
-    - git+https://github.com/napari/napari.git@af7d46918a67084e6c8e927251936e417ee6d5cc#egg=napari[all]
+    - git+https://github.com/napari/napari.git@0bc1adc290d50f9793bd1b7c0ce912095f2e2354#egg=napari[all]
     - PyQt5>=5.12.3
