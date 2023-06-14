@@ -1,0 +1,125 @@
+# This project was generated with Unknown using template: https://github.com/beeware/briefcase-template@v0.3.14
+[tool.briefcase]
+project_name = "Mouse Brain Segmentation"
+bundle = "fi.bioimaging.mouse-brain-segmentation"
+version = "0.0.1"
+url = "https://github.com/turku-bioimaging/idt-mouse-brain-segmentation"
+license = "BSD license"
+author = "Junel Solis"
+author_email = "junel.solis@abo.fi"
+
+[tool.briefcase.app.mousebrainsegmentation]
+formal_name = "Mouse Brain Segmentation"
+description = "Mouse Brain Segmentation"
+long_description = """More details about the app should go here.
+"""
+icon = "src/mousebrainsegmentation/resources/mousebrainsegmentation"
+sources = [
+    "src/mousebrainsegmentation",
+]
+test_sources = [
+    "tests",
+]
+
+requires = [
+    "pyside6~=6.2",
+    "scikit-image~=0.19",
+    "shapely~=2.0",
+    "tqdm~=4.64",
+    "rasterio~=1.3",
+    "git+https://github.com/napari/napari.git@0bc1adc290d50f9793bd1b7c0ce912095f2e2354#egg=napari[all]",
+    "matplotlib",
+    "pandas~=1.5",
+]
+test_requires = [
+    "pytest",
+]
+
+[tool.briefcase.app.mousebrainsegmentation.macOS]
+requires = [
+    "std-nslog~=1.0.0"
+]
+
+[tool.briefcase.app.mousebrainsegmentation.linux]
+requires = [
+]
+
+[tool.briefcase.app.mousebrainsegmentation.linux.system.debian]
+system_requires = [
+]
+
+system_runtime_requires = [
+    # Derived from https://doc.qt.io/qt-6/linux-requirements.html
+    "libxrender1",
+    "libxcb-render0",
+    "libxcb-render-util0",
+    "libxcb-shape0",
+    "libxcb-randr0",
+    "libxcb-xfixes0",
+    "libxcb-xkb1",
+    "libxcb-sync1",
+    "libxcb-shm0",
+    "libxcb-icccm4",
+    "libxcb-keysyms1",
+    "libxcb-image0",
+    "libxcb-util1",
+    "libxkbcommon0",
+    "libxkbcommon-x11-0",
+    "libfontconfig1",
+    "libfreetype6",
+    "libxext6",
+    "libx11-6",
+    "libxcb1",
+    "libx11-xcb1",
+    "libsm6",
+    "libice6",
+    "libglib2.0-0",
+    "libgl1",
+    "libegl1-mesa",
+    "libdbus-1-3",
+    "libgssapi-krb5-2",
+]
+
+[tool.briefcase.app.mousebrainsegmentation.linux.system.rhel]
+system_requires = [
+]
+
+system_runtime_requires = [
+    "qt6-qtbase-gui",
+]
+
+[tool.briefcase.app.mousebrainsegmentation.linux.system.arch]
+system_requires = [
+    "qt6-base",
+]
+
+system_runtime_requires = [
+    "qt6-base",
+]
+
+[tool.briefcase.app.mousebrainsegmentation.linux.appimage]
+manylinux = "manylinux2014"
+
+system_requires = [
+# ?? FIXME
+]
+linuxdeploy_plugins = []
+
+[tool.briefcase.app.mousebrainsegmentation.linux.flatpak]
+flatpak_runtime = "org.kde.Platform"
+flatpak_runtime_version = "6.4"
+flatpak_sdk = "org.kde.Sdk"
+
+[tool.briefcase.app.mousebrainsegmentation.windows]
+requires = []
+
+# Mobile deployments
+[tool.briefcase.app.mousebrainsegmentation.iOS]
+supported = false
+
+[tool.briefcase.app.mousebrainsegmentation.android]
+supported = false
+
+# Web deployments
+[tool.briefcase.app.mousebrainsegmentation.web]
+supported = false
