@@ -20,7 +20,7 @@ conda env update -f environment.yml --prune
 ```
 
 ### Build
-The build process depends on [PyInstaller](https://pyinstaller.org). In the local environment `pip install pyinstaller`.  
+The build process depends on [PyInstaller](https://pyinstaller.org). In the local environment `pip install pyinstaller`. Currently, only _preprocess.exe_ can be built with PyInstaller. The analysis script _interact.py_ requires the environment to be setup.
   
 _preprocess.exe_
 ```
@@ -29,9 +29,9 @@ pyinstaller --onefile --windowed setup_ui.py \
   --name preprocess
 ```
 
-_analyze.exe_
+<!-- _analyze.exe_
 ```
 pyinstaller --onefile --windowed interact.py \
   --add-data "brain_atlas_files;brain_atlas_files"
   --name analyze
-```
+``` -->
