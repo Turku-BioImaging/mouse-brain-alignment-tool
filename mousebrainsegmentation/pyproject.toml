@@ -1,17 +1,17 @@
 # This project was generated with Unknown using template: https://github.com/beeware/briefcase-template@v0.3.14
 [tool.briefcase]
-project_name = "Mouse Brain Segmentation"
-bundle = "fi.bioimaging.mouse-brain-segmentation"
-version = "0.0.1"
-url = "https://github.com/turku-bioimaging/idt-mouse-brain-segmentation"
+project_name = "Mouse Brain Alignment Tool"
+bundle = "fi.bioimaging.mouse-brain-alignment-tool"
+version = "0.1.0"
+url = "https://github.com/turku-bioimaging/mouse-brain-alignment-tool"
 license = "BSD license"
-author = "Junel Solis"
-author_email = "junel.solis@abo.fi"
+author = "Junel Solis, Zuzana Čočková"
+author_email = "image-data@abo.fi"
 
 [tool.briefcase.app.mousebrainsegmentation]
-formal_name = "Mouse Brain Segmentation"
-description = "Mouse Brain Segmentation"
-long_description = """More details about the app should go here.
+formal_name = "Mouse Brain Alignment Tool"
+description = "Mouse Brain Alignment Tool"
+long_description = """Processing of autoradiography (ARG) images from mouse brain tissue. This project includes a Napari-based user interface where ARG slides can be preprocessed and registered to Allen Brain Atlas regions.
 """
 icon = "src/mousebrainsegmentation/resources/mousebrainsegmentation"
 sources = [
