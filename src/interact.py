@@ -4,6 +4,7 @@ import os
 from glob import glob
 
 import napari
+from qtpy.QtWidgets import QLineEdit, QCheckBox
 import numpy as np
 import pandas as pd
 import shapely
@@ -90,7 +91,6 @@ def _get_background():
     bg.napari_layer.data = bg.napari_layer.data[0 : (len(bg.napari_layer.data) - 1)]
     # mean = slide_img[bg_labels == 1].mean()
     mean = bg.image[bg_labels == 1].mean()
-    print(f"Background mean: {mean}")
     return mean
 
 
@@ -123,10 +123,17 @@ def _initialize_analysis_tool():
             analyze_widget,
             next_image_widget,
             previous_image_widget,
-            image_name_widget,
+            show_image_name_widget,
+            show_analyzed_widget,
         ]
     )
-    image_name_widget.enabled = False
+    for widget in [hide_widget, show_all_widget, analyze_widget]:
+        widget.enabled = False
+
+    if results_data.image_is_analyzed(section_image.name):
+        show_analyzed_widget.setChecked(True)
+    else:
+        show_analyzed_widget.setChecked(False)
 
     viewer.reset_view()
 
@@ -304,6 +311,17 @@ def _polygons_to_roi() -> np.ndarray:
     label_names = shapes_layer.text.string.array
 
     label_names, labels = _get_mapped_labels(labels, label_names)
+    # here add background so that the label indices match
+    label_names = ["bg"] + label_names
+
+    # [print(lbl) for lbl in label_names]
+    # [print(i) for i in np.unique(labels)]
+    # for i in np.unique(labels):
+    #     if i > 0:
+    #         lbl = labels == i
+    #         viewer.add_image(
+    #             lbl.astype(np.uint8), name=label_names[i - 1], colormap="turbo"
+    #         )
 
     return label_names, labels
 
@@ -328,10 +346,16 @@ def _analyze_roi():
 
     results_dict["All_ROIs"] = bg_subtracted_mean_per_pixel
 
+    # [print(i) for i in label_names]
+    # print("\n")
+
     for region_name in results_data.region_names:
         if region_name == "All_ROIs":
             continue
         if region_name in label_names:
+            # print('region_name: ', region_name)
+            # print('label_name_index: ', label_names.index(region_name))
+            # print("\n")
             roi_mean = section_image.image[
                 labels == label_names.index(region_name)
             ].mean()
@@ -349,10 +373,11 @@ def _analyze_roi():
     results_data.add_row(results_dict)
 
 
-@magicgui(call_button="Calculate background")
+@magicgui(call_button="Calculate background", result_widget=True)
 def calculate_bg_widget():
     bg.mean = 0
     bg.mean = _get_background()
+    return bg.mean 
 
 
 @magicgui(call_button="Start alignment")
@@ -365,6 +390,8 @@ def start_alignment():
 @magicgui(call_button="Add ROIs / Reset")
 def rois_widget():
     _load_selected_rois()
+    for widget in [hide_widget,show_all_widget, analyze_widget]:
+        widget.enabled = True
 
 
 @magicgui(call_button="Hide unselected rois")
@@ -380,7 +407,7 @@ def show_all_widget():
 @magicgui(call_button="Analyze rois")
 def analyze_widget():
     _analyze_roi()
-    image_name_widget.update(analyzed=True)
+    show_analyzed_widget.setChecked(True)
 
 
 @magicgui(call_button="Brain Atlas")
@@ -403,6 +430,10 @@ def atlas_view_widget():
     section_image.napari_layer = viewer.add_image(
         section_image.image, name="section_image", colormap="gray_r"
     )
+
+    for widget in [hide_widget,show_all_widget, analyze_widget]:
+        widget.enabled = False
+
     viewer.reset_view()
 
 
@@ -426,18 +457,17 @@ def next_image_widget():
                 section_image.image = _align_centroids()
 
         if results_data.image_is_analyzed(section_image.name):
-            colormap = "green"
-            image_name_widget.update(analyzed=True)
+            colormap = "gray_r"
+            show_analyzed_widget.setChecked(True)
         else:
             colormap = "gray_r"
-            image_name_widget.update(analyzed=False)
+            show_analyzed_widget.setChecked(False)
 
         section_image.napari_layer = viewer.add_image(
             section_image.image, name="section_image", colormap=colormap
         )
 
-        image_name_widget.update(IMG=section_image.name)
-
+        show_image_name_widget.setText(section_image.name)
         if len(viewer.layers) == 3:
             pass
         else:
@@ -471,18 +501,17 @@ def previous_image_widget():
                 section_image.image = _align_centroids()
 
         if results_data.image_is_analyzed(section_image.name):
-            colormap = "green"
-            image_name_widget.update(analyzed=True)
+            colormap = "gray_r"
+            show_analyzed_widget.setChecked(True)
         else:
             colormap = "gray_r"
-            image_name_widget.update(analyzed=False)
+            show_analyzed_widget.setChecked(False)
 
         section_image.napari_layer = viewer.add_image(
             section_image.image, name="section_image", colormap=colormap
         )
 
-        image_name_widget.update(IMG=section_image.name)
-
+        show_image_name_widget.setText(section_image.name)
         if len(viewer.layers) == 3:
             pass
         else:
@@ -523,11 +552,16 @@ if __name__ == "__main__":
     assert len(section_image_paths) > 0
     section_image = SectionImage(section_image_paths[0])
 
-    @magicgui(call_button="")
-    def image_name_widget(IMG: str = section_image.name, analyzed: bool = False):
-        pass
-
     bg = Background()
+
+    # configure image info widgets
+    show_image_name_widget= QLineEdit(section_image.name)
+    show_image_name_widget.setStyleSheet('background: #E5E4E2; color: black; margin: 10;') 
+    show_image_name_widget.setReadOnly(True)
+
+    show_analyzed_widget = QCheckBox('analyzed')
+    show_analyzed_widget.setStyleSheet("background: #E5E4E2; color: black; padding-left: 20; margin: 10;")
+    show_analyzed_widget.setDisabled(True)
 
     # configure napari
     viewer = napari.Viewer()

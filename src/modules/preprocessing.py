@@ -11,9 +11,12 @@ from scipy import ndimage as ndi
 from skimage import img_as_ubyte, io
 from skimage.feature import peak_local_max
 from skimage.filters import median, threshold_otsu
-from skimage.measure import regionprops
+from skimage.measure import regionprops, regionprops_table
 from skimage.morphology import binary_opening, remove_small_objects
 from skimage.segmentation import watershed
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
+import pandas as pd
 
 WORKDIR = os.path.join(os.path.dirname(__file__), "workdir")
 
@@ -34,6 +37,7 @@ def _configure_dirs(args):
     image_basename = os.path.splitext(os.path.basename(args.image_path))[0]
 
     os.makedirs(os.path.join(WORKDIR, image_basename))
+    os.makedirs(os.path.join(WORKDIR, image_basename, 'QC'))
 
     if args.num_animals == 2:
         animal_left_name = args.animal_left_name
@@ -139,6 +143,7 @@ if __name__ == "__main__":
 
     # read region properties
     props = regionprops(label_image=labels, intensity_image=rotated_img)
+    props_table = pd.DataFrame(regionprops_table(label_image=labels, intensity_image=rotated_img, properties=('label','centroid')))
 
     right = 0
     left = 0
@@ -180,6 +185,8 @@ if __name__ == "__main__":
 
         io.imsave(os.path.join(WORKDIR, image_basename, fname), section)
 
+        props_table.loc[i, 'name'] = os.path.basename(fname).strip('.tif')
+
     # save raw image file
     image_basename = os.path.splitext(os.path.basename(args.image_path))[0]
     if args.num_animals == 2:
@@ -206,6 +213,47 @@ if __name__ == "__main__":
 
     if (args.with_napari) is True:
         napari.run()
+
+
+    font = {
+            'color':  'black',
+            'weight': 'bold',
+            'size': 4
+            }
+
+    fig1, ax = plt.subplots(figsize=(10, 10), dpi=300)
+    plt.imshow(io.imread(args.image_path), cmap="Greys")
+    plt.title("Raw image")
+    ax.set_rasterized(True)
+    ax.get_xaxis().set_visible(False)
+    ax.get_yaxis().set_visible(False)
+
+    fig2, ax = plt.subplots(figsize=(10, 10), dpi=300)
+    plt.imshow(rotated_img, cmap="Greys")
+    plt.title("Rotated image")
+    ax.set_rasterized(True)
+    ax.get_xaxis().set_visible(False)
+    ax.get_yaxis().set_visible(False)
+
+    fig3, ax = plt.subplots(figsize=(10, 10), dpi=300)
+    plt.imshow(rotated_img, cmap="Greys")
+    plt.imshow(labels, cmap='rainbow', alpha=0.3*(labels>0))
+    plt.title("Identified slices")
+    ax.set_rasterized(True)
+    ax.get_xaxis().set_visible(False)
+    ax.get_yaxis().set_visible(False)
+
+    for index, row in props_table.iterrows():
+        plt.text(row['centroid-1'], row['centroid-0'], row['name'], 
+                        ha='center', va='center', rotation=25, fontdict=font)
+ 
+
+    pdfpath = os.path.join(WORKDIR, image_basename, "QC", 'processing_QC.pdf')
+    pp = PdfPages(pdfpath) 
+    pp.savefig(fig1)
+    pp.savefig(fig2)
+    pp.savefig(fig3) 
+    pp.close()
 
     # move everything to selected output dir
     if not os.path.isdir(args.output_dir):
