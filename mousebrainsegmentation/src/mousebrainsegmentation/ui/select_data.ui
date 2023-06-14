@@ -49,7 +49,7 @@
     <property name="title">
      <string>Select data location</string>
     </property>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -79,6 +79,9 @@
     </widget>
    </widget>
    <widget class="QPushButton" name="continue_push_button">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>20</x>
