@@ -4,15 +4,19 @@ import os
 from glob import glob
 
 import napari
-from qtpy.QtWidgets import QLineEdit, QCheckBox
 import numpy as np
 import pandas as pd
 import shapely
 from magicgui import magicgui
-from .classes import Atlas, Background, Results, SectionImage
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog
+from PyQt5.uic import loadUi
+
+# from qtpy.QtWidgets import QCheckBox, QLineEdit
 from scipy import ndimage as ndi
 from skimage import filters, img_as_ubyte, io, measure, morphology
 from skimage.transform import rescale
+
+from .classes import Atlas, Background, Results, SectionImage
 
 ATLAS_DIR = os.path.join(os.path.dirname(__file__), "brain_atlas_files")
 
@@ -519,6 +523,17 @@ def previous_image_widget():
             atlas.napari_roi_shapes_layer.mode = "SELECT"
 
 
+class SelectDataWindow(QMainWindow):
+    data_dir = ""
+
+    def __init__(self):
+        super(SelectDataWindow, self).__init__()
+        loadUi(os.path.join(os.path.dirname(__file__), "ui", "select_data.ui"), self)
+
+    def set_data_dir(self):
+        self.data_dir = QFileDialog.getExistingDirectory(self, "Select data directory")
+
+
 def main():
     # global atlas, results_data, bg, viewer
     # parser = argparse.ArgumentParser()
@@ -526,61 +541,60 @@ def main():
     # args = parser.parse_args()
     global viewer, bg, atlas, section_image, section_image_paths, results_data
 
-    args = {}
-    args["data_dir"] = os.path.join(
-        os.path.dirname(__file__),
-        "..",
-        "test-output",
-        "DPX71-72",
-        "DPX71",
-    )
+    app = QApplication([])
+    window = SelectDataWindow()
+    window.setWindowTitle("Select data directory...")
+    window.show()
+    app.exec_()
 
-    ## load and configure atlas data
-    (
-        anatomical_atlas,
-        rois,
-        region_column_names,
-        slice_centroids_dict,
-        roi_shapes_dict,
-        roi_colors_dict,
-    ) = _load_atlas_data()
+    # load the select data location window
 
-    atlas = Atlas(
-        image=anatomical_atlas,
-        rois=rois,
-        region_column_names=region_column_names,
-        slice_centroids_dict=slice_centroids_dict,
-        roi_shapes_dict=roi_shapes_dict,
-        roi_colors_dict=roi_colors_dict,
-    )
+    # ## load and configure atlas data
+    # (
+    #     anatomical_atlas,
+    #     rois,
+    #     region_column_names,
+    #     slice_centroids_dict,
+    #     roi_shapes_dict,
+    #     roi_colors_dict,
+    # ) = _load_atlas_data()
 
-    ## init results data
-    results_data = Results(data_dir=args["data_dir"])
+    # atlas = Atlas(
+    #     image=anatomical_atlas,
+    #     rois=rois,
+    #     region_column_names=region_column_names,
+    #     slice_centroids_dict=slice_centroids_dict,
+    #     roi_shapes_dict=roi_shapes_dict,
+    #     roi_colors_dict=roi_colors_dict,
+    # )
 
-    # load first section image
-    section_image_paths = sorted(
-        glob(os.path.join(args["data_dir"], "sections", "*.tif"))
-    )
-    assert len(section_image_paths) > 0
-    section_image = SectionImage(section_image_paths[0])
+    # ## init results data
+    # results_data = Results(data_dir=args["data_dir"])
 
-    bg = Background()
+    # # load first section image
+    # section_image_paths = sorted(
+    #     glob(os.path.join(args["data_dir"], "sections", "*.tif"))
+    # )
+    # assert len(section_image_paths) > 0
+    # section_image = SectionImage(section_image_paths[0])
 
-    # configure image info widgets
-    show_image_name_widget = QLineEdit(section_image.name)
-    show_image_name_widget.setStyleSheet(
-        "background: #E5E4E2; color: black; margin: 10;"
-    )
-    show_image_name_widget.setReadOnly(True)
+    # bg = Background()
 
-    show_analyzed_widget = QCheckBox("analyzed")
-    show_analyzed_widget.setStyleSheet(
-        "background: #E5E4E2; color: black; padding-left: 20; margin: 10;"
-    )
-    show_analyzed_widget.setDisabled(True)
+    # # configure image info widgets
+    # show_image_name_widget = QLineEdit(section_image.name)
+    # show_image_name_widget.setStyleSheet(
+    #     "background: #E5E4E2; color: black; margin: 10;"
+    # )
+    # show_image_name_widget.setReadOnly(True)
 
-    # configure napari
-    viewer = napari.Viewer()
-    _select_background(args)
+    # show_analyzed_widget = QCheckBox("analyzed")
+    # show_analyzed_widget.setStyleSheet(
+    #     "background: #E5E4E2; color: black; padding-left: 20; margin: 10;"
+    # )
+    # show_analyzed_widget.setDisabled(True)
 
-    napari.run()
+    # # configure napari
+    # viewer = napari.Viewer()
+    # _select_background(args)
+
+    # napari.run()
