@@ -18,6 +18,10 @@ We use the mamba or conda package manager. If there are any changes in the `envi
 mamba env update -f environment.yml --prune
 conda env update -f environment.yml --prune
 ```
+Activate the environment:
+```
+mamba activate mouse-brain-alignment-tool
+```
 
 ### Build
 The build process depends on [PyInstaller](https://pyinstaller.org). In the local environment `pip install pyinstaller`. Currently, only _preprocess.exe_ can be built with PyInstaller. The analysis script _analyze.py_ requires the environment to be setup.

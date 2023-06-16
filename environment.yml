@@ -1,4 +1,4 @@
-name: idt-mouse-brain-segmentation
+name: mouse-brain-alignment-tool
 channels:
   - conda-forge
 dependencies:
