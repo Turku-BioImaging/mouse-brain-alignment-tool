@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>animal_mouse</class>
- <widget class="QDialog" name="animal_mouse">
+ <class>preprocess_dialog</class>
+ <widget class="QDialog" name="preprocess_dialog">
   <property name="enabled">
    <bool>true</bool>
   </property>
@@ -9,42 +9,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>611</width>
-    <height>609</height>
+    <width>629</width>
+    <height>444</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Preprocess image...</string>
+   <string>Preprocess TIFF images</string>
   </property>
-  <widget class="QLineEdit" name="image_fname_textbox">
+  <widget class="QPushButton" name="run_button">
    <property name="geometry">
     <rect>
-     <x>60</x>
-     <y>90</y>
-     <width>341</width>
-     <height>31</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="select_image">
-   <property name="geometry">
-    <rect>
-     <x>410</x>
-     <y>90</y>
-     <width>161</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Select image</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="process">
-   <property name="geometry">
-    <rect>
-     <x>410</x>
-     <y>440</y>
-     <width>161</width>
+     <x>430</x>
+     <y>310</y>
+     <width>181</width>
      <height>41</height>
     </rect>
    </property>
@@ -52,7 +29,7 @@
     <string>Run</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_2">
+  <widget class="QLabel" name="title_label">
    <property name="geometry">
     <rect>
      <x>30</x>
@@ -67,273 +44,17 @@
     </font>
    </property>
    <property name="text">
-    <string>Preprocess image</string>
+    <string>Preprocess TIFF images</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="QLabel" name="select_image_file">
-   <property name="geometry">
-    <rect>
-     <x>60</x>
-     <y>50</y>
-     <width>351</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>11</pointsize>
-    </font>
-   </property>
-   <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Image file location:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-  </widget>
-  <widget class="QGroupBox" name="group_num_animals">
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
-   <property name="geometry">
-    <rect>
-     <x>60</x>
-     <y>240</y>
-     <width>221</width>
-     <height>101</height>
-    </rect>
-   </property>
-   <property name="title">
-    <string/>
-   </property>
-   <widget class="QRadioButton" name="num_animals_1">
-    <property name="geometry">
-     <rect>
-      <x>170</x>
-      <y>20</y>
-      <width>51</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>1</string>
-    </property>
-    <property name="checkable">
-     <bool>true</bool>
-    </property>
-    <property name="checked">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QRadioButton" name="num_animals_2">
-    <property name="geometry">
-     <rect>
-      <x>170</x>
-      <y>50</y>
-      <width>51</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>2</string>
-    </property>
-    <property name="checked">
-     <bool>false</bool>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_4">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>30</y>
-      <width>151</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>11</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Number of animals:</string>
-    </property>
-   </widget>
-  </widget>
-  <widget class="QGroupBox" name="group_slides">
-   <property name="geometry">
-    <rect>
-     <x>60</x>
-     <y>130</y>
-     <width>221</width>
-     <height>101</height>
-    </rect>
-   </property>
-   <property name="title">
-    <string/>
-   </property>
-   <widget class="QRadioButton" name="num_slides_1">
-    <property name="geometry">
-     <rect>
-      <x>170</x>
-      <y>20</y>
-      <width>41</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>1</string>
-    </property>
-    <property name="checked">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QRadioButton" name="num_slides_2">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>170</x>
-      <y>50</y>
-      <width>51</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>2</string>
-    </property>
-    <property name="checked">
-     <bool>false</bool>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>30</y>
-      <width>141</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>11</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Number of slides:</string>
-    </property>
-   </widget>
-  </widget>
-  <widget class="QGroupBox" name="group_animal_names">
-   <property name="geometry">
-    <rect>
-     <x>290</x>
-     <y>240</y>
-     <width>301</width>
-     <height>101</height>
-    </rect>
-   </property>
-   <property name="title">
-    <string>Animal names:</string>
-   </property>
-   <widget class="QLineEdit" name="animal_right_name_textbox">
-    <property name="geometry">
-     <rect>
-      <x>130</x>
-      <y>31</y>
-      <width>151</width>
-      <height>21</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="animal_left_name_textbox">
-    <property name="geometry">
-     <rect>
-      <x>130</x>
-      <y>60</y>
-      <width>151</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="frame">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QLabel" name="upper_row">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>30</y>
-      <width>111</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Upper row (R):</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="lower_row">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>60</y>
-      <width>111</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Lower row (L):</string>
-    </property>
-   </widget>
-  </widget>
-  <widget class="QLabel" name="output_directory_label">
-   <property name="geometry">
-    <rect>
-     <x>60</x>
-     <y>350</y>
-     <width>131</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>11</pointsize>
-    </font>
-   </property>
-   <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Output directory:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="select_output_directory">
-   <property name="geometry">
-    <rect>
-     <x>410</x>
-     <y>390</y>
-     <width>161</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Select output directory</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="output_directory_textbox">
-   <property name="geometry">
-    <rect>
-     <x>60</x>
-     <y>390</y>
-     <width>341</width>
-     <height>31</height>
-    </rect>
-   </property>
-  </widget>
   <widget class="QLabel" name="log_textbox_label">
    <property name="geometry">
     <rect>
-     <x>60</x>
-     <y>430</y>
+     <x>30</x>
+     <y>270</y>
      <width>131</width>
      <height>41</height>
     </rect>
@@ -344,35 +65,94 @@
     </font>
    </property>
    <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Log:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Running log&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
   <widget class="QTextEdit" name="log_textbox">
    <property name="geometry">
     <rect>
-     <x>60</x>
-     <y>470</y>
-     <width>300</width>
-     <height>70</height>
+     <x>30</x>
+     <y>310</y>
+     <width>311</width>
+     <height>101</height>
     </rect>
    </property>
-    <property name="readOnly">
-     <bool>true</bool>
-    </property>
+   <property name="readOnly">
+    <bool>true</bool>
+   </property>
   </widget>
-  <zorder>group_slides</zorder>
-  <zorder>group_num_animals</zorder>
-  <zorder>image_fname_textbox</zorder>
-  <zorder>select_image</zorder>
-  <zorder>process</zorder>
-  <zorder>label_2</zorder>
-  <zorder>select_image_file</zorder>
-  <zorder>group_animal_names</zorder>
-  <zorder>output_directory_label</zorder>
-  <zorder>select_output_directory</zorder>
-  <zorder>output_directory_textbox</zorder>
-  <zorder>log_textbox_label</zorder>
-  <zorder>log_textbox</zorder>
+  <widget class="QGroupBox" name="source_group_box">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>70</y>
+     <width>581</width>
+     <height>81</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Source directory</string>
+   </property>
+   <widget class="QLineEdit" name="source_dir_textbox">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>391</width>
+      <height>35</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="select_source_dir_button">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>30</y>
+      <width>161</width>
+      <height>35</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Select directory</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="output_group_box">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>170</y>
+     <width>581</width>
+     <height>81</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Output directory</string>
+   </property>
+   <widget class="QLineEdit" name="output_dir_textbox">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>391</width>
+      <height>35</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="select_output_directory">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>30</y>
+      <width>161</width>
+      <height>35</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Select output directory</string>
+    </property>
+   </widget>
+  </widget>
  </widget>
  <resources/>
  <connections/>
