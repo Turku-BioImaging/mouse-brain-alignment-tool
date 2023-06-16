@@ -78,7 +78,12 @@ class Results:
             self.region_names = ["All_ROIs"] + list(data.keys())
 
         assert os.path.isdir(data_dir)
-        self.data_path = os.path.join(data_dir, "results.csv")
+
+        if os.path.basename(data_dir) != "sections":
+            self.data_path = os.path.join(data_dir, "..", "..", "results.csv")
+        else:
+            self.data_path = os.path.join(data_dir, "..", "results.csv")
+
         self._init_data()
 
     def _init_data(self):
