@@ -1,7 +1,6 @@
 import os
 import subprocess
 import pandas as pd
-from glob import glob
 from PyQt5.QtWidgets import QApplication, QDialog, QFileDialog
 from PyQt5.uic import loadUi
 
@@ -37,7 +36,7 @@ def _get_slide_dict(data: pd.DataFrame, input_dir: str):
         assert (
             type(right) == str and len(right) > 0
         ), f"{data_dict['image_path']} is missing animal_right_name"
-        
+
     return data_dict
 
 
@@ -53,9 +52,7 @@ class MainWindow(QDialog):
         self.select_source_dir_button.clicked.connect(self.set_input_dir)
         self.select_output_directory.clicked.connect(self.set_output_dir)
 
-        # self.run_button.clicked.connect(self.print_output1)
         self.run_button.clicked.connect(self.run)
-        # self.run_button.clicked.connect(self.print_output2)
 
     def set_input_dir(self):
         self.input_dir = QFileDialog.getExistingDirectory(self, "Select Directory")
@@ -66,67 +63,79 @@ class MainWindow(QDialog):
         self.output_dir = QFileDialog.getExistingDirectory(self, "Select Directory")
         self.output_dir_textbox.setText(self.output_dir)
 
-    # def print_output1(self):
-    #     self.log_textbox.append(f"File: {os.path.basename(self.image_fname)}")
-    #     self.log_textbox.append("Running preprocessing...")
-    #     QApplication.processEvents()
+    def log_processing_output(self, index_str: str, image_fname: str):
+        self.log_textbox.append(
+            f"({index_str}) Preprocessing {os.path.basename(image_fname)}..."
+        )
+        QApplication.processEvents()
 
-    def print_output2(self):
-        self.log_textbox.append("Finished!")
+    def log_finished_output(self):
+        self.log_textbox.append("")
+        self.log_textbox.append("PREPROCESSING COMPLETE.")
         self.log_textbox.append("")
 
     def run(self):
+        self.run_button.setEnabled(False)
+        self.select_source_dir_button.setEnabled(False)
+        self.select_output_directory.setEnabled(False)
         assert self.data is not None, "Data not loaded."
         assert type(self.data) == pd.DataFrame, "Data is not a pandas DataFrame."
 
+        script_path = os.path.join(
+            os.path.dirname(__file__), "modules", "preprocessing.py"
+        )
+        num_files = len(self.data)
+
         # loop through dataframe and run processing
-        for _, row in self.data.iterrows():
-            data_dict = _get_slide_dict(data=row, input_dir=self.input_dir)
-            print(data_dict)
+        for index, row in self.data.iterrows():
+            data = _get_slide_dict(data=row, input_dir=self.input_dir)
 
-        # script_path = os.path.join(
-        #     os.path.dirname(__file__), "modules", "preprocessing.py"
-        # )
+            self.log_processing_output(f"{index + 1} / {num_files}", data["image_path"])
 
-        # if self.num_animals == 2:
-        #     subprocess.call(
-        #         [
-        #             "python",
-        #             script_path,
-        #             "--image-path",
-        #             self.image_fname,
-        #             "--num-slides",
-        #             str(self.num_slides),
-        #             "--num-animals",
-        #             str(self.num_animals),
-        #             "--animal-left-name",
-        #             self.animal_left_name,
-        #             "--animal-right-name",
-        #             self.animal_right_name,
-        #             '--output-dir',
-        #             self.output_dir
-        #         ],
-        #         stdout=subprocess.PIPE,
-        #         stderr=subprocess.PIPE,
-        #     )
+            if data["num_animals"] == 2:
+                subprocess.call(
+                    [
+                        "python",
+                        script_path,
+                        "--image-path",
+                        data["image_path"],
+                        "--num-slides",
+                        str(data["num_slides"]),
+                        "--num-animals",
+                        str(data["num_animals"]),
+                        "--animal-left-name",
+                        data["animal_left_name"],
+                        "--animal-right-name",
+                        data["animal_right_name"],
+                        "--output-dir",
+                        self.output_dir,
+                    ],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                )
 
-        # if self.num_animals == 1:
-        #     subprocess.call(
-        #         [
-        #             "python",
-        #             script_path,
-        #             "--image-path",
-        #             self.image_fname,
-        #             "--num-slides",
-        #             str(self.num_slides),
-        #             "--num-animals",
-        #             str(self.num_animals),
-        #             "--output-dir",
-        #             self.output_dir,
-        #         ],
-        #         stdout=subprocess.PIPE,
-        #         stderr=subprocess.PIPE,
-        #     )
+            if data["num_animals"] == 1:
+                subprocess.call(
+                    [
+                        "python",
+                        script_path,
+                        "--image-path",
+                        data["image_path"],
+                        "--num-slides",
+                        str(data["num_slides"]),
+                        "--num-animals",
+                        str(data["num_animals"]),
+                        "--output-dir",
+                        self.output_dir,
+                    ],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                )
+
+        self.log_finished_output()
+        self.run_button.setEnabled(True)
+        self.select_source_dir_button.setEnabled(True)
+        self.select_output_directory.setEnabled(True)
 
 
 if __name__ == "__main__":
