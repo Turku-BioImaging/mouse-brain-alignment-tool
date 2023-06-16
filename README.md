@@ -1,4 +1,4 @@
-# Mouse Brain Segmentation Project
+# Mouse Brain Alignment Tool
 Processing of autoradiography (ARG) images from mouse brain tissue. This project includes a Napari-based user interface where ARG slides can be preprocessed and registered to Allen Brain Atlas regions.
 <table>
   <tbody>
@@ -20,18 +20,11 @@ conda env update -f environment.yml --prune
 ```
 
 ### Build
-The build process depends on [PyInstaller](https://pyinstaller.org). In the local environment `pip install pyinstaller`.  
+The build process depends on [PyInstaller](https://pyinstaller.org). In the local environment `pip install pyinstaller`. Currently, only _preprocess.exe_ can be built with PyInstaller. The analysis script _interact.py_ requires the environment to be setup.
   
 _preprocess.exe_
 ```
 pyinstaller --onefile --windowed setup_ui.py \
   --add-data "gui;gui"
   --name preprocess
-```
-
-_analyze.exe_
-```
-pyinstaller --onefile --windowed interact.py \
-  --add-data "brain_atlas_files;brain_atlas_files"
-  --name analyze
 ```
