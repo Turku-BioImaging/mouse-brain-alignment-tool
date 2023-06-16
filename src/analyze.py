@@ -51,7 +51,10 @@ def _load_atlas_data():
 
 
 def _select_background(data_dir: str):
-    slide_path = glob(os.path.join(data_dir, "tiff", "*.tif"))[0]
+    if not os.path.isdir(os.path.join(data_dir, '..', 'tiff')):
+        slide_path = glob(os.path.join(data_dir,"..","..", "tiff", "*.tif"))[0]
+    else:
+        slide_path = glob(os.path.join(data_dir, "..","tiff", "*.tif"))[0]
     bg.image = io.imread(slide_path)
 
     # scalle down bg image to reduce size
