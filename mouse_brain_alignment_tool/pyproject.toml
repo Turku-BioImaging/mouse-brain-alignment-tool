@@ -8,14 +8,14 @@ license = "BSD license"
 author = "Junel Solis, Zuzana Čočková"
 author_email = "image-data@abo.fi"
 
-[tool.briefcase.app.mousebrainsegmentation]
+[tool.briefcase.app.mouse_brain_alignment_tool]
 formal_name = "Mouse Brain Alignment Tool"
 description = "Mouse Brain Alignment Tool"
 long_description = """Processing of autoradiography (ARG) images from mouse brain tissue. This project includes a Napari-based user interface where ARG slides can be preprocessed and registered to Allen Brain Atlas regions.
 """
-icon = "src/mousebrainsegmentation/resources/mousebrainsegmentation"
+icon = "src/mouse_brain_alignment_tool/resources/mouse_brain_alignment_tool"
 sources = [
-    "src/mousebrainsegmentation",
+    "src/mouse_brain_alignment_tool",
 ]
 test_sources = [
     "tests",
@@ -30,21 +30,22 @@ requires = [
     "git+https://github.com/napari/napari.git@0bc1adc290d50f9793bd1b7c0ce912095f2e2354#egg=napari[all]",
     "matplotlib",
     "pandas~=1.5",
+    "PyQt5>=5.12.3"
 ]
 test_requires = [
     "pytest",
 ]
 
-[tool.briefcase.app.mousebrainsegmentation.macOS]
+[tool.briefcase.app.mouse_brain_alignment_tool.macOS]
 requires = [
     "std-nslog~=1.0.0"
 ]
 
-[tool.briefcase.app.mousebrainsegmentation.linux]
+[tool.briefcase.app.mouse_brain_alignment_tool.linux]
 requires = [
 ]
 
-[tool.briefcase.app.mousebrainsegmentation.linux.system.debian]
+[tool.briefcase.app.mouse_brain_alignment_tool.linux.system.debian]
 system_requires = [
 ]
 
@@ -80,7 +81,7 @@ system_runtime_requires = [
     "libgssapi-krb5-2",
 ]
 
-[tool.briefcase.app.mousebrainsegmentation.linux.system.rhel]
+[tool.briefcase.app.mouse_brain_alignment_tool.linux.system.rhel]
 system_requires = [
 ]
 
@@ -88,7 +89,7 @@ system_runtime_requires = [
     "qt6-qtbase-gui",
 ]
 
-[tool.briefcase.app.mousebrainsegmentation.linux.system.arch]
+[tool.briefcase.app.mouse_brain_alignment_tool.linux.system.arch]
 system_requires = [
     "qt6-base",
 ]
@@ -97,7 +98,7 @@ system_runtime_requires = [
     "qt6-base",
 ]
 
-[tool.briefcase.app.mousebrainsegmentation.linux.appimage]
+[tool.briefcase.app.mouse_brain_alignment_tool.linux.appimage]
 manylinux = "manylinux2014"
 
 system_requires = [
@@ -105,21 +106,21 @@ system_requires = [
 ]
 linuxdeploy_plugins = []
 
-[tool.briefcase.app.mousebrainsegmentation.linux.flatpak]
+[tool.briefcase.app.mouse_brain_alignment_tool.linux.flatpak]
 flatpak_runtime = "org.kde.Platform"
 flatpak_runtime_version = "6.4"
 flatpak_sdk = "org.kde.Sdk"
 
-[tool.briefcase.app.mousebrainsegmentation.windows]
+[tool.briefcase.app.mouse_brain_alignment_tool.windows]
 requires = []
 
 # Mobile deployments
-[tool.briefcase.app.mousebrainsegmentation.iOS]
+[tool.briefcase.app.mouse_brain_alignment_tool.iOS]
 supported = false
 
-[tool.briefcase.app.mousebrainsegmentation.android]
+[tool.briefcase.app.mouse_brain_alignment_tool.android]
 supported = false
 
 # Web deployments
-[tool.briefcase.app.mousebrainsegmentation.web]
+[tool.briefcase.app.mouse_brain_alignment_tool.web]
 supported = false
