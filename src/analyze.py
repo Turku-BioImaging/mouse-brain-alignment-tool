@@ -1,15 +1,16 @@
-import argparse
 import json
 import os
 from glob import glob
 
 import napari
 from qtpy.QtWidgets import QLineEdit, QCheckBox
+from PyQt5.QtWidgets import QApplication
 import numpy as np
 import pandas as pd
 import shapely
 from magicgui import magicgui
 from modules.classes import Atlas, Background, Results, SectionImage
+from modules.select_data import SelectDataWindow
 from scipy import ndimage as ndi
 from skimage import filters, img_as_ubyte, io, measure, morphology
 from skimage.transform import rescale
@@ -49,8 +50,8 @@ def _load_atlas_data():
     )
 
 
-def _select_background(args):
-    slide_path = glob(os.path.join(args.data_dir, "tiff", "*.tif"))[0]
+def _select_background(data_dir: str):
+    slide_path = glob(os.path.join(data_dir, "tiff", "*.tif"))[0]
     bg.image = io.imread(slide_path)
 
     # scalle down bg image to reduce size
@@ -314,15 +315,6 @@ def _polygons_to_roi() -> np.ndarray:
     # here add background so that the label indices match
     label_names = ["bg"] + label_names
 
-    # [print(lbl) for lbl in label_names]
-    # [print(i) for i in np.unique(labels)]
-    # for i in np.unique(labels):
-    #     if i > 0:
-    #         lbl = labels == i
-    #         viewer.add_image(
-    #             lbl.astype(np.uint8), name=label_names[i - 1], colormap="turbo"
-    #         )
-
     return label_names, labels
 
 
@@ -346,16 +338,11 @@ def _analyze_roi():
 
     results_dict["All_ROIs"] = bg_subtracted_mean_per_pixel
 
-    # [print(i) for i in label_names]
-    # print("\n")
 
     for region_name in results_data.region_names:
         if region_name == "All_ROIs":
             continue
         if region_name in label_names:
-            # print('region_name: ', region_name)
-            # print('label_name_index: ', label_names.index(region_name))
-            # print("\n")
             roi_mean = section_image.image[
                 labels == label_names.index(region_name)
             ].mean()
@@ -377,7 +364,7 @@ def _analyze_roi():
 def calculate_bg_widget():
     bg.mean = 0
     bg.mean = _get_background()
-    return bg.mean 
+    return bg.mean
 
 
 @magicgui(call_button="Start alignment")
@@ -390,7 +377,7 @@ def start_alignment():
 @magicgui(call_button="Add ROIs / Reset")
 def rois_widget():
     _load_selected_rois()
-    for widget in [hide_widget,show_all_widget, analyze_widget]:
+    for widget in [hide_widget, show_all_widget, analyze_widget]:
         widget.enabled = True
 
 
@@ -431,7 +418,7 @@ def atlas_view_widget():
         section_image.image, name="section_image", colormap="gray_r"
     )
 
-    for widget in [hide_widget,show_all_widget, analyze_widget]:
+    for widget in [hide_widget, show_all_widget, analyze_widget]:
         widget.enabled = False
 
     viewer.reset_view()
@@ -521,9 +508,6 @@ def previous_image_widget():
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--data-dir", type=str, required=True)
-    args = parser.parse_args()
 
     ## load and configure atlas data
     (
@@ -544,27 +528,39 @@ if __name__ == "__main__":
         roi_colors_dict=roi_colors_dict,
     )
 
+    app = QApplication([])
+    window = SelectDataWindow()
+    window.setWindowTitle("Select data directory...")
+    window.show()
+    app.exec_()
+
+    data_dir = window.data_dir
+
     ## init results data
-    results_data = Results(data_dir=args.data_dir)
+    results_data = Results(data_dir=data_dir)
 
     # load first section image
-    section_image_paths = sorted(glob(os.path.join(args.data_dir, "sections", "*.tif")))
+    section_image_paths = sorted(glob(os.path.join(data_dir, "sections", "*.tif")))
     assert len(section_image_paths) > 0
     section_image = SectionImage(section_image_paths[0])
 
     bg = Background()
 
     # configure image info widgets
-    show_image_name_widget= QLineEdit(section_image.name)
-    show_image_name_widget.setStyleSheet('background: #E5E4E2; color: black; margin: 10;') 
+    show_image_name_widget = QLineEdit(section_image.name)
+    show_image_name_widget.setStyleSheet(
+        "background: #E5E4E2; color: black; margin: 10;"
+    )
     show_image_name_widget.setReadOnly(True)
 
-    show_analyzed_widget = QCheckBox('analyzed')
-    show_analyzed_widget.setStyleSheet("background: #E5E4E2; color: black; padding-left: 20; margin: 10;")
+    show_analyzed_widget = QCheckBox("analyzed")
+    show_analyzed_widget.setStyleSheet(
+        "background: #E5E4E2; color: black; padding-left: 20; margin: 10;"
+    )
     show_analyzed_widget.setDisabled(True)
 
     # configure napari
     viewer = napari.Viewer()
-    _select_background(args)
+    _select_background(data_dir=data_dir)
 
     napari.run()
