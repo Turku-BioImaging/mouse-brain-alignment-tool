@@ -51,7 +51,10 @@ def _load_atlas_data():
 
 
 def _select_background(data_dir: str):
-    slide_path = glob(os.path.join(data_dir, "tiff", "*.tif"))[0]
+    if not os.path.isdir(os.path.join(data_dir, '..', 'tiff')):
+        slide_path = glob(os.path.join(data_dir,"..","..", "tiff", "*.tif"))[0]
+    else:
+        slide_path = glob(os.path.join(data_dir, "..","tiff", "*.tif"))[0]
     bg.image = io.imread(slide_path)
 
     # scalle down bg image to reduce size
@@ -338,7 +341,6 @@ def _analyze_roi():
 
     results_dict["All_ROIs"] = bg_subtracted_mean_per_pixel
 
-
     for region_name in results_data.region_names:
         if region_name == "All_ROIs":
             continue
@@ -508,7 +510,6 @@ def previous_image_widget():
 
 
 if __name__ == "__main__":
-
     ## load and configure atlas data
     (
         anatomical_atlas,
@@ -540,7 +541,7 @@ if __name__ == "__main__":
     results_data = Results(data_dir=data_dir)
 
     # load first section image
-    section_image_paths = sorted(glob(os.path.join(data_dir, "sections", "*.tif")))
+    section_image_paths = sorted(glob(os.path.join(data_dir, "*.tif")))
     assert len(section_image_paths) > 0
     section_image = SectionImage(section_image_paths[0])
 
