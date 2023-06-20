@@ -33,6 +33,7 @@ mamba activate mouse-brain-alignment-tool
 cd c:\Users\<username>\Desktop\mouse-brain-alignment-tool\src
 python preprocess.py
 python analyze.py
+```
 
 ### Build
 The build process depends on [PyInstaller](https://pyinstaller.org). In the local environment `pip install pyinstaller`. Currently, only _preprocess.exe_ can be built with PyInstaller. The analysis script _analyze.py_ requires the environment to be setup.
