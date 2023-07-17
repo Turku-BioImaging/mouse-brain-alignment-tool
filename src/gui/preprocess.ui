@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>629</width>
-    <height>444</height>
+    <height>497</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -152,6 +152,22 @@
      <string>Select output directory</string>
     </property>
    </widget>
+  </widget>
+  <widget class="QLabel" name="version_label">
+   <property name="geometry">
+    <rect>
+     <x>496</x>
+     <y>460</y>
+     <width>111</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>version label</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
   </widget>
  </widget>
  <resources/>
