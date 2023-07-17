@@ -34,14 +34,14 @@ def _configure_dirs(args):
     shutil.rmtree(WORKDIR, ignore_errors=True)
     os.makedirs(WORKDIR)
 
-    image_basename = os.path.splitext(os.path.basename(args.image_path))[0]
+    image_basename = os.path.splitext(os.path.basename(args["image_path"]))[0]
 
     os.makedirs(os.path.join(WORKDIR, image_basename))
-    os.makedirs(os.path.join(WORKDIR, image_basename, 'QC'))
+    os.makedirs(os.path.join(WORKDIR, image_basename, "QC"))
 
-    if args.num_animals == 2:
-        animal_left_name = args.animal_left_name
-        animal_right_name = args.animal_right_name
+    if args["num_animals"] == 2:
+        animal_left_name = args["animal_left_name"]
+        animal_right_name = args["animal_right_name"]
 
         for i in (animal_left_name, animal_right_name):
             os.makedirs(os.path.join(WORKDIR, image_basename, i, "sections"))
@@ -62,6 +62,191 @@ def _pad_section(img: np.ndarray, value: int):
     img = np.pad(img, pad_width=((y, y), (x, x)))
 
     return img
+
+
+def run(
+    image_path: str,
+    num_slides: int,
+    num_animals: int,
+    output_dir: str,
+    animal_left_name: str = None,
+    animal_right_name: str = None,
+):
+    _check_image_file(image_path)
+    _configure_dirs(
+        {
+            "image_path": image_path,
+            "num_animals": num_animals,
+            "animal_left_name": animal_left_name,
+            "animal_right_name": animal_right_name,
+        }
+    )
+
+    # load image and identify large objects
+    img = io.imread(image_path)
+    blurred = median(img, np.ones((11, 11)))
+    threshold_value = threshold_otsu(blurred)
+    thresholded = blurred > threshold_value
+    fill_holes = ndi.binary_fill_holes(thresholded)
+    fill_holes = binary_opening(fill_holes, np.ones((5, 5)))
+    large_objects_only = img_as_ubyte(remove_small_objects(fill_holes, 6000))
+
+    # rotate the image parts
+    sep_x_val = int(img.shape[1] / 2)
+    if num_slides == 2:
+        large_objects_only = np.hstack(
+            (
+                np.rot90(large_objects_only[:, 0:sep_x_val], 2),
+                large_objects_only[:, sep_x_val:],
+            )
+        )
+
+        img = np.hstack((np.rot90(img[:, 0:sep_x_val], 2), img[:, sep_x_val:]))
+
+    large_objects_only = np.rot90(large_objects_only, 1)
+    rotated_img = np.rot90(img, 1)
+
+    # watershed segmentation
+    distance = ndi.distance_transform_edt(large_objects_only)
+    coords = peak_local_max(
+        distance,
+        footprint=np.ones((350, 350)),
+        labels=large_objects_only,
+        min_distance=200,
+    )
+    mask = np.zeros(distance.shape, dtype=bool)
+    mask[tuple(coords.T)] = True
+    markers, _ = ndi.label(mask)
+    labels = watershed(-distance, markers=markers, mask=large_objects_only)
+
+    # read region properties
+    props = regionprops(label_image=labels, intensity_image=rotated_img)
+    props_table = pd.DataFrame(
+        regionprops_table(
+            label_image=labels,
+            intensity_image=rotated_img,
+            properties=("label", "centroid"),
+        )
+    )
+
+    right = 0
+    left = 0
+
+    for i, p in enumerate(props):
+        section = p.image_intensity
+        section = _pad_section(section, 600)
+
+        image_basename = os.path.splitext(os.path.basename(image_path))[0]
+        sep_x_val = int(img.shape[1] / 2)
+
+        if num_slides == 2:
+            if p.centroid[0] < sep_x_val:
+                if num_animals == 2:
+                    fname = os.path.join(
+                        animal_right_name,
+                        "sections",
+                        f"{animal_right_name}_{str(right).zfill(3)}.tif",
+                    )
+                else:
+                    fname = os.path.join(
+                        "sections", f"{image_basename}_1_{str(right).zfill(3)}.tif"
+                    )
+                right += 1
+            else:
+                if num_animals == 2:
+                    fname = os.path.join(
+                        animal_left_name,
+                        "sections",
+                        f"{animal_left_name}_{str(left).zfill(3)}.tif",
+                    )
+                else:
+                    fname = os.path.join(
+                        "sections", f"{image_basename}_2_{str(left).zfill(3)}.tif"
+                    )
+                left += 1
+        else:
+            fname = os.path.join("sections", f"{image_basename}_{str(i).zfill(3)}.tif")
+
+        io.imsave(os.path.join(WORKDIR, image_basename, fname), section)
+
+        props_table.loc[i, "name"] = os.path.basename(fname).strip(".tif")
+
+    # save raw image file
+    image_basename = os.path.splitext(os.path.basename(image_path))[0]
+    if num_animals == 2:
+        left_fpath = os.path.join(
+            WORKDIR,
+            image_basename,
+            animal_left_name,
+            "tiff",
+            f"{image_basename}.tif",
+        )
+        io.imsave(left_fpath, img)
+
+        right_fpath = os.path.join(
+            WORKDIR,
+            image_basename,
+            animal_right_name,
+            "tiff",
+            f"{image_basename}.tif",
+        )
+        io.imsave(right_fpath, img)
+    else:
+        fpath = os.path.join(WORKDIR, image_basename, "tiff", f"{image_basename}.tif")
+        io.imsave(fpath, img)
+
+    font = {"color": "black", "weight": "bold", "size": 4}
+
+    fig1, ax = plt.subplots(figsize=(10, 10), dpi=300)
+    plt.imshow(io.imread(image_path), cmap="Greys")
+    plt.title("Raw image")
+    ax.set_rasterized(True)
+    ax.get_xaxis().set_visible(False)
+    ax.get_yaxis().set_visible(False)
+
+    fig2, ax = plt.subplots(figsize=(10, 10), dpi=300)
+    plt.imshow(rotated_img, cmap="Greys")
+    plt.title("Rotated image")
+    ax.set_rasterized(True)
+    ax.get_xaxis().set_visible(False)
+    ax.get_yaxis().set_visible(False)
+
+    fig3, ax = plt.subplots(figsize=(10, 10), dpi=300)
+    plt.imshow(rotated_img, cmap="Greys")
+    plt.imshow(labels, cmap="rainbow", alpha=0.3 * (labels > 0))
+    plt.title("Identified slices")
+    ax.set_rasterized(True)
+    ax.get_xaxis().set_visible(False)
+    ax.get_yaxis().set_visible(False)
+
+    for _, row in props_table.iterrows():
+        plt.text(
+            row["centroid-1"],
+            row["centroid-0"],
+            row["name"],
+            ha="center",
+            va="center",
+            rotation=25,
+            fontdict=font,
+        )
+
+    pdfpath = os.path.join(WORKDIR, image_basename, "QC", "processing_QC.pdf")
+    pp = PdfPages(pdfpath)
+    pp.savefig(fig1)
+    pp.savefig(fig2)
+    pp.savefig(fig3)
+    pp.close()
+
+    # move everything to selected output dir
+    if not os.path.isdir(output_dir):
+        os.makedirs(output_dir)
+    workdir_contents = os.listdir(WORKDIR)
+    for i in workdir_contents:
+        source = os.path.join(WORKDIR, i)
+        dest = os.path.join(output_dir, i)
+        shutil.copytree(source, dest, dirs_exist_ok=True)
+
+    shutil.rmtree(WORKDIR)
 
 
 if __name__ == "__main__":
@@ -143,7 +328,13 @@ if __name__ == "__main__":
 
     # read region properties
     props = regionprops(label_image=labels, intensity_image=rotated_img)
-    props_table = pd.DataFrame(regionprops_table(label_image=labels, intensity_image=rotated_img, properties=('label','centroid')))
+    props_table = pd.DataFrame(
+        regionprops_table(
+            label_image=labels,
+            intensity_image=rotated_img,
+            properties=("label", "centroid"),
+        )
+    )
 
     right = 0
     left = 0
@@ -185,7 +376,7 @@ if __name__ == "__main__":
 
         io.imsave(os.path.join(WORKDIR, image_basename, fname), section)
 
-        props_table.loc[i, 'name'] = os.path.basename(fname).strip('.tif')
+        props_table.loc[i, "name"] = os.path.basename(fname).strip(".tif")
 
     # save raw image file
     image_basename = os.path.splitext(os.path.basename(args.image_path))[0]
@@ -214,12 +405,7 @@ if __name__ == "__main__":
     if (args.with_napari) is True:
         napari.run()
 
-
-    font = {
-            'color':  'black',
-            'weight': 'bold',
-            'size': 4
-            }
+    font = {"color": "black", "weight": "bold", "size": 4}
 
     fig1, ax = plt.subplots(figsize=(10, 10), dpi=300)
     plt.imshow(io.imread(args.image_path), cmap="Greys")
@@ -237,22 +423,28 @@ if __name__ == "__main__":
 
     fig3, ax = plt.subplots(figsize=(10, 10), dpi=300)
     plt.imshow(rotated_img, cmap="Greys")
-    plt.imshow(labels, cmap='rainbow', alpha=0.3*(labels>0))
+    plt.imshow(labels, cmap="rainbow", alpha=0.3 * (labels > 0))
     plt.title("Identified slices")
     ax.set_rasterized(True)
     ax.get_xaxis().set_visible(False)
     ax.get_yaxis().set_visible(False)
 
     for index, row in props_table.iterrows():
-        plt.text(row['centroid-1'], row['centroid-0'], row['name'], 
-                        ha='center', va='center', rotation=25, fontdict=font)
- 
+        plt.text(
+            row["centroid-1"],
+            row["centroid-0"],
+            row["name"],
+            ha="center",
+            va="center",
+            rotation=25,
+            fontdict=font,
+        )
 
-    pdfpath = os.path.join(WORKDIR, image_basename, "QC", 'processing_QC.pdf')
-    pp = PdfPages(pdfpath) 
+    pdfpath = os.path.join(WORKDIR, image_basename, "QC", "processing_QC.pdf")
+    pp = PdfPages(pdfpath)
     pp.savefig(fig1)
     pp.savefig(fig2)
-    pp.savefig(fig3) 
+    pp.savefig(fig3)
     pp.close()
 
     # move everything to selected output dir
@@ -263,5 +455,5 @@ if __name__ == "__main__":
         source = os.path.join(WORKDIR, i)
         dest = os.path.join(args.output_dir, i)
         shutil.copytree(source, dest, dirs_exist_ok=True)
-        
+
     shutil.rmtree(WORKDIR)

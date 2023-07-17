@@ -1,8 +1,9 @@
 import os
-import subprocess
 import pandas as pd
 from PyQt5.QtWidgets import QApplication, QDialog, QFileDialog
 from PyQt5.uic import loadUi
+import modules.preprocessing as preprocessing
+from modules import constants
 
 
 def _load_excel_data(data_dir: str):
@@ -53,6 +54,7 @@ class MainWindow(QDialog):
         self.select_output_directory.clicked.connect(self.set_output_dir)
 
         self.run_button.clicked.connect(self.run)
+        self.version_label.setText(f"Version: {constants.DIST_VERSION}")
 
     def set_input_dir(self):
         self.input_dir = QFileDialog.getExistingDirectory(self, "Select Directory")
@@ -93,43 +95,21 @@ class MainWindow(QDialog):
             self.log_processing_output(f"{index + 1} / {num_files}", data["image_path"])
 
             if data["num_animals"] == 2:
-                subprocess.call(
-                    [
-                        "python",
-                        script_path,
-                        "--image-path",
-                        data["image_path"],
-                        "--num-slides",
-                        str(data["num_slides"]),
-                        "--num-animals",
-                        str(data["num_animals"]),
-                        "--animal-left-name",
-                        data["animal_left_name"],
-                        "--animal-right-name",
-                        data["animal_right_name"],
-                        "--output-dir",
-                        self.output_dir,
-                    ],
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
+                preprocessing.run(
+                    image_path=data["image_path"],
+                    num_slides=data["num_slides"],
+                    num_animals=data["num_animals"],
+                    animal_left_name=data["animal_left_name"],
+                    animal_right_name=data["animal_right_name"],
+                    output_dir=self.output_dir,
                 )
 
             if data["num_animals"] == 1:
-                subprocess.call(
-                    [
-                        "python",
-                        script_path,
-                        "--image-path",
-                        data["image_path"],
-                        "--num-slides",
-                        str(data["num_slides"]),
-                        "--num-animals",
-                        str(data["num_animals"]),
-                        "--output-dir",
-                        self.output_dir,
-                    ],
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
+                preprocessing.run(
+                    image_path=data["image_path"],
+                    num_slides=data["num_slides"],
+                    num_animals=data["num_animals"],
+                    output_dir=self.output_dir,
                 )
 
         self.log_finished_output()
