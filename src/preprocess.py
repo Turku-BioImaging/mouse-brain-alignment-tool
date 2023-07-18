@@ -57,12 +57,16 @@ class MainWindow(QDialog):
         self.version_label.setText(f"Version: {constants.DIST_VERSION}")
 
     def set_input_dir(self):
-        self.input_dir = QFileDialog.getExistingDirectory(self, "Select Directory")
+        self.input_dir = os.path.normpath(
+            QFileDialog.getExistingDirectory(self, "Select Directory")
+        )
         self.source_dir_textbox.setText(self.input_dir)
         self.data = _load_excel_data(self.input_dir)
 
     def set_output_dir(self):
-        self.output_dir = QFileDialog.getExistingDirectory(self, "Select Directory")
+        self.output_dir = os.path.normpath(
+            QFileDialog.getExistingDirectory(self, "Select Directory")
+        )
         self.output_dir_textbox.setText(self.output_dir)
 
     def log_processing_output(self, index_str: str, image_fname: str):
@@ -83,9 +87,9 @@ class MainWindow(QDialog):
         assert self.data is not None, "Data not loaded."
         assert type(self.data) == pd.DataFrame, "Data is not a pandas DataFrame."
 
-        script_path = os.path.join(
-            os.path.dirname(__file__), "modules", "preprocessing.py"
-        )
+        # script_path = os.path.join(
+        #     os.path.dirname(__file__), "modules", "preprocessing.py"
+        # )
         num_files = len(self.data)
 
         # loop through dataframe and run processing
