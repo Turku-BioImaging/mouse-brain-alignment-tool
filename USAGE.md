@@ -3,7 +3,7 @@
 ## Module 1 - Preprocessing
 First here: how to set up images and excel.
 
-#### Input data
+### Input data
 A single folder is required as input. This folder must contain any number of TIFF images and a single _data.xlsx_ file. Images __MUST__ use the extension _*.tif_, otherwise they will not be included in the preprocessing. The _data.xlsx_ is an Excel workbook that must follow a particular format. It includes the folowing columns:
 
 - image_filename
@@ -21,9 +21,9 @@ _Example contents of input folder_
 
 For every image, if the column *num_animals* has a value of _1_, then the columns *animal_left_name* and *animal_right_name* must be blank. A copy of the Excel template is located [here](excel_template.xlsx).
 
-#### Expected output
+### Expected output
 
-#### Usage
+### Usage
 
 ------
 In Miniforge prompt type in python preprocess.py to open preprocessing graphical user interface.
