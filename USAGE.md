@@ -4,21 +4,26 @@
 First here: how to set up images and excel.
 
 ### Input data
-A single folder is required as input. This folder must contain any number of TIFF images and a single _data.xlsx_ file. Images __MUST__ use the extension _*.tif_, otherwise they will not be included in the preprocessing. The _data.xlsx_ is an Excel workbook that must follow a particular format. It includes the folowing columns:
-
+A single folder is required as input. This folder must contain any number of TIFF images and a single _data.xlsx_ file. Images must use the extension _*.tif_, otherwise they will not be included in the preprocessing. The _data.xlsx_ is an Excel workbook that must follow a particular format. It includes the folowing columns: 
 - image_filename
 - num_slides
 - num_animals
 - animal_left_name
 - animal_right_name
+
+<br/><br/>
+<figure>
+  <img src="/assets/docs/screenshot-102249.png" alt="Example of Excel data file" style="width: 50%; height: auto;">
+  <figcaption>Example of Excel data file</figcaption>
+</figure>
   
-
-![Example of data file](/assets/docs/screenshot-102249.png)  
-_Example of Excel data file_
-
-![Example contents of input folder](/assets/docs/screenshot-102625.png)  
-_Example contents of input folder_
-
+<br/><br/>
+<figure>
+  <img src="/assets/docs/screenshot-102625.png" alt="Example contents of input folder" style="width: 50%; height: auto;">
+  <figcaption>Example contents of input folder</figcaption>
+</figure>
+  
+<br/><br/>
 For every image, if the column *num_animals* has a value of _1_, then the columns *animal_left_name* and *animal_right_name* must be blank. A copy of the Excel template is located [here](excel_template.xlsx).
 
 ### Expected output
