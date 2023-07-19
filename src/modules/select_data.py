@@ -1,5 +1,6 @@
 import os
 
+import modules.constants as constants
 from PyQt5.QtWidgets import QFileDialog, QMainWindow
 from PyQt5.uic import loadUi
 
@@ -15,6 +16,7 @@ class SelectDataWindow(QMainWindow):
 
         self.select_dirpath_push_button.clicked.connect(self.set_data_dir)
         self.continue_push_button.clicked.connect(self.close_window)
+        self.version_label.setText(f"Version: {constants.DIST_VERSION}")
 
     def set_data_dir(self):
         self.data_dir = QFileDialog.getExistingDirectory(self, "Select data directory")
