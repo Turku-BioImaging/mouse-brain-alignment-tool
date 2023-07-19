@@ -4,6 +4,8 @@ Semi-automated processing of autoradiography (ARG) images from mouse brain tissu
 <div style="display: flex; align-items: center; justify-content: center; width: 100%;">
   <img src="/assets/turku_bioimaging_logo.jpg" alt='Turku BioImaging' style="height: 50px; width: auto;">
   <img src="/assets/spanner.png" style="height: 15px; width: auto;">
+  <img src="/assets/turku_pet_centre_logo.svg" alt="Turku PET Centre" style="height: 50px; width: auto;">
+  <img src="/assets/spanner.png" style="height: 15px; width: auto;">
   <img src="/assets/isidore_logo.png" alt="ISIDORe Project" style="height: 50px; width: auto;">
   <img src="/assets/spanner.png" style="height: 15px; width: auto;">
   <img src="/assets/euro_bioimaging_logo.png" alt="Euro BioImaging" style="height: 50px; width: auto;">
