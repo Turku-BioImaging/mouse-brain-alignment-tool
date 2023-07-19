@@ -1,16 +1,11 @@
 # Mouse Brain Alignment Tool
 Semi-automated processing of autoradiography (ARG) images from mouse brain tissue. This project includes a [Napari](https://napari.org)-based user interface where ARG slides can be preprocessed and registered to [Allen Brain Atlas](https://portal.brain-map.org/) regions.
 
-
-<table>
-  <tbody>
-    <tr>
-      <td style='padding: 10px;'><img src='/assets/turku_bioimaging_logo.jpg' style='height:50px;width:auto'/></td>
-      <td><img src='/assets/isidore_logo.png' style='height:50px; width: auto;'/></td>
-      <td><img src='/assets/euro_bioimaging_logo.png' style='height:50px; width: auto;'/></td>
-    </tr>
-  </tbody>
-</table>
+<div style="display: flex; align-items: center; justify-content: center; width: 100%;">
+  <img src="/assets/turku_bioimaging_logo.jpg" alt='Turku BioImaging' style="margin-right: 50px; height: 50px; width: auto;">
+  <img src="/assets/isidore_logo.png" alt="ISIDORe Project" style="margin-right: 50px; height: 50px; width: auto;">
+  <img src="/assets/euro_bioimaging_logo.png" alt="Euro BioImaging" style="height: 50px; width: auto;">
+</div>
 
 ## Developers / Contributors
 
