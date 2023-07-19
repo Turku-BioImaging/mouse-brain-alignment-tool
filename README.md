@@ -46,3 +46,8 @@ pyinstaller --onefile --windowed preprocess.py \
   --collect-all openpyxl \
   --name preprocess
 ```
+
+_analyze.exe_
+```
+pyinstaller analyze.spec
+```
