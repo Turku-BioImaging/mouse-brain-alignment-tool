@@ -1,5 +1,7 @@
 # Mouse Brain Alignment Tool
-Processing of autoradiography (ARG) images from mouse brain tissue. This project includes a Napari-based user interface where ARG slides can be preprocessed and registered to Allen Brain Atlas regions.
+Semi-automated processing of autoradiography (ARG) images from mouse brain tissue. This project includes a [Napari](https://napari.org)-based user interface where ARG slides can be preprocessed and registered to [Allen Brain Atlas](https://portal.brain-map.org/) regions.
+
+
 <table>
   <tbody>
     <tr>
