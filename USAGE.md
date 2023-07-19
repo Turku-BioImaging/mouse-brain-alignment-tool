@@ -36,4 +36,10 @@ In Miniforge prompt type in python preprocess.py to open preprocessing graphical
 Select the directory where your images and data.xls file are. Select the folder where you want the preprocessed images to appear as output directory.
 
 ## Module 2 - Analysis
-Some text here...
+Add short description of the module.
+
+### Input data
+
+### Expected output
+
+### Usage
