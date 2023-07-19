@@ -1,4 +1,8 @@
 # User Documentation
+Download a copy of the application through the [GitHub repository](https://github.com/Turku-BioImaging/mouse-brain-alignment-tool/releases) hosted by Turku BioImaging. Download and extract the release ZIP file into a folder of your choice. After extraction, there should be three files present:
+- preprocess-*version-number*.exe
+- analyze-*version-number*.exe
+- data.xlsx
 
 ## Module 1 - Preprocessing
 First here: how to set up images and excel.
