@@ -1,1 +1,1 @@
-DIST_VERSION = "0.2.1"
+DIST_VERSION = "0.2.2"
