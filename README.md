@@ -37,11 +37,7 @@ The build process depends on [PyInstaller](https://pyinstaller.org). In the loca
   
 _preprocess.exe_
 ```
-pyinstaller --onefile --windowed preprocess.py \
-  --add-data "gui;gui" \
-  --hidden-import openpyxl \ 
-  --collect-all openpyxl \
-  --name preprocess
+pyinstaller preprocess.spec
 ```
 
 _analyze.exe_
