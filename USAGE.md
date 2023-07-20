@@ -35,7 +35,6 @@ For every image, if the column *num_animals* has a value of _1_, then the column
 ### Usage
 
 ------
-In Miniforge prompt type in python preprocess.py to open preprocessing graphical user interface.
 <img width="317" alt="preprocess_gui" src="https://github.com/Turku-BioImaging/mouse-brain-alignment-tool/assets/136598378/581beab6-5ac6-47db-8922-45bfb86e914a">
 Select the directory where your images and data.xls file are. Select the folder where you want the preprocessed images to appear as output directory.
 
