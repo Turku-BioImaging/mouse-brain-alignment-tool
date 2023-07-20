@@ -19,7 +19,9 @@ Semi-automated processing of autoradiography (ARG) images from mouse brain tissu
   </a>
 </div>
 
-## Developers / Contributors
+
+
+## Developers
 
 ### Environments
 We use the mamba or conda package manager. If there are any changes in the `environment.yml`, please update your environment using one of the following lines:
@@ -41,6 +43,14 @@ pyinstaller preprocess.spec
 ```
 
 _analyze.exe_
+
 ```
 pyinstaller analyze.spec
 ```
+
+## Funding
+<a href="https://isidore-project.eu" target="_blank"><img src="/assets/isidore_logo.png" style="height: 50px; width: auto"></a>  
+
+Funding for this project was provided by the _Integrated Services for Infectious Disease Outbreak Research_ [(ISIDORe)](https://isidore-project.eu) project of [Euro-BioImaging](https://eurobioimaging.eu).  
+
+
