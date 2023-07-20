@@ -3,14 +3,15 @@ import os
 from glob import glob
 
 import napari
-from qtpy.QtWidgets import QLineEdit, QCheckBox
-from PyQt5.QtWidgets import QApplication
 import numpy as np
 import pandas as pd
+import pyi_splash
 import shapely
 from magicgui import magicgui
 from modules.classes import Atlas, Background, Results, SectionImage
 from modules.select_data import SelectDataWindow
+from PyQt5.QtWidgets import QApplication
+from qtpy.QtWidgets import QCheckBox, QLineEdit
 from scipy import ndimage as ndi
 from skimage import filters, img_as_ubyte, io, measure, morphology
 from skimage.transform import rescale
@@ -533,6 +534,7 @@ if __name__ == "__main__":
     window = SelectDataWindow()
     window.setWindowTitle("Select data directory...")
     window.show()
+    pyi_splash.close()
     app.exec_()
 
     data_dir = window.data_dir
