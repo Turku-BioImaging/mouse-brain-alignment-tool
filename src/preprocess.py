@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QApplication, QDialog, QFileDialog
 from PyQt5.uic import loadUi
 import modules.preprocessing as preprocessing
 from modules import constants
+import pyi_splash
 
 
 def _load_excel_data(data_dir: str):
@@ -126,4 +127,6 @@ if __name__ == "__main__":
     app = QApplication([])
     window = MainWindow()
     window.show()
+    pyi_splash.close()
     app.exec_()
+    
