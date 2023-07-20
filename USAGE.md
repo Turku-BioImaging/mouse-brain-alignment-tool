@@ -37,7 +37,8 @@ Double-click on __preprocess-0.2.0.exe__ to open the preprocessing interface (th
 __IMPORTANT:__ The Excel document should not be open while the preprocess app is running!
 
 ------
-<img width="317" alt="preprocess_gui" src="https://github.com/Turku-BioImaging/mouse-brain-alignment-tool/assets/136598378/581beab6-5ac6-47db-8922-45bfb86e914a">  
+<img style="width: 320px; height: auto;" alt="preprocess_gui" src="https://github.com/Turku-BioImaging/mouse-brain-alignment-tool/assets/136598378/581beab6-5ac6-47db-8922-45bfb86e914a">  
+
 Select the directory where your images and data.xls file are. Select the folder where you want the preprocessed images to appear as output directory.
 Depending on data size, the preprocess can take longer time. Process can be tracked from running log, where all processed images will be marked, as well as the completion of preprocessing. 
 In the output folder, there will be a separate folder for each image, with a name corresponding to image_filename. The folder will contain separate subfolders for each animal in the image. These subfolders will contain sections folder, the tiff folder that contains original .tif file as well as QC folder. Sections folder contains all the sections of the brain as separate .tif files, while QC (quality control) folder contains a PDF document with raw image, rotated slices and documented slices. 
