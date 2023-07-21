@@ -28,7 +28,13 @@ A single folder is required as input. This folder must contain any number of TIF
 </figure>
   
 <br/><br/>
-For every image, if the column *num_animals* has a value of _1_, then the columns *animal_left_name* and *animal_right_name* must be blank. A copy of the Excel template is located [here](excel_template.xlsx).
+For every image, if the column *num_animals* has a value of _1_, then the columns *animal_left_name* and *animal_right_name* must be blank. If the column *num_animals* has a value of _2_, then the preprocessing tool assumes a column of slides in the input images to be from the same animal (see image below). A copy of the Excel template is located [here](excel_template.xlsx).
+
+<br/><br/>
+<figure>
+  <img src="/assets/docs/example_dataset_layout.png" alt="How the tool differentiates between animals" style="width: 20%; height: auto;">
+  <figcaption>How the tool differentiates between animals</figcaption>
+</figure>
 
 ### Expected output
 
