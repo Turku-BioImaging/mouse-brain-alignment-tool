@@ -69,7 +69,10 @@ _Module 2 data selection interface_
 Select a _sections_ folder to be analyzed and click _Continue_ to open the image analysis graphical user interface. The module will automatically open the original source image with a box for analyzing background signal level. This is done simply by moving the box to an area without signal from a sample and clicking _Calculate background_ on the right upper corner. The background signal value appears in the box under the button. The size and shape of the box for setting the background is freely adjustable. 
 After the background is set click _Start alignment_ to start matching ROIs to individual brain slices. 
 
-<img src="https://github.com/Turku-BioImaging/mouse-brain-alignment-tool/assets/docs/setting_background.png" alt="Module 2 analysis interface" style="width: 50%; height: auto;"></img>
-_Module 2 Image analysis interface for setting background_
+<br/><br/>
+<figure>
+  <img src="/assets/docs/setting_background.png" alt="Module 2 Image analysis interface for setting background" style="width: 50%; height: auto;">
+  <figcaption>Module 2 Image analysis interface for setting background</figcaption>
+</figure>
 
 The sectioned brain slice, ROI map and anatomical reference image are all displayed side by side. Using the slider at the bottom the user can toggle through the reference images and choose the best match for the brain slice. A reference image from the middle of the brain is displayed by default. 
