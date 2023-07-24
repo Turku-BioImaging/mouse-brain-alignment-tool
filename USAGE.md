@@ -85,7 +85,7 @@ Next the sectioned sample brain slice image, ROI map and anatomical reference im
 </figure>
 
 <br/><br/>
-The user can now move the ROIs to better match the sample. The ROIs can be freely moved and adjusted using the layer control options on the upper left of the window. Unnecessary ROIs can be hidden using the controls on the right or deleted alltogether. Clicking _Add ROIs / Reset_ will reset all the ROIs back to the original position from the anatomical reference. Clicking _Brain atlas_ will bring the user back to the anatomical reference image selection. After the user is satisfied with the ROI matching, clicking _Analyze rois_ will upload results to a cvs-file. 
+The user can now move the ROIs to better match the sample. The ROIs can be freely moved and adjusted using the layer control options on the upper left of the window. Unnecessary ROIs can be hidden using the controls on the right or deleted alltogether. Clicking _Add ROIs / Reset_ will reset all the ROIs back to the original position from the anatomical reference. Clicking _Brain atlas_ will bring the user back to the anatomical reference image selection. After the user is satisfied with the ROI matching, clicking _Analyze rois_ will upload results to a cvs-file. A checkmark will appear in the bottom box on the right to indicate that the slice has been analyzed.
 
 <br/><br/>
 <figure>
