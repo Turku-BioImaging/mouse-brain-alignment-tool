@@ -75,4 +75,5 @@ After the background is set click _Start alignment_ to start matching ROIs to in
   <figcaption>Module 2 Image analysis interface for setting background</figcaption>
 </figure>
 
+<br/><br/>
 The sectioned brain slice, ROI map and anatomical reference image are all displayed side by side. Using the slider at the bottom the user can toggle through the reference images and choose the best match for the brain slice. A reference image from the middle of the brain is displayed by default. 
