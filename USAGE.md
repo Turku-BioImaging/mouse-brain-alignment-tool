@@ -66,6 +66,8 @@ _Example contents of sections folder used as input._
 <img src="https://github.com/Turku-BioImaging/mouse-brain-alignment-tool/assets/11444749/d865c645-9c74-46a0-a5da-3b80c8edc463" alt="Module 2 data selection interface" style="width: 320px; height: auto;"></img>  
 _Module 2 data selection interface_  
 
+Select a _sections_ folder to be analyzed and click _Continue_ to open the image analysis graphical user interface. The module will automatically open the original source image with a box for analyzing background signal level. This is done simply by moving the box to an area without signal from a sample and clicking _Calculate background_ on the right upper corner. The background signal value appears in the box under the button. The size and shape of the box for setting the background is freely adjustable. 
+
 <img src="https://github.com/Turku-BioImaging/mouse-brain-alignment-tool/assets/11444749/9e657af1-51d0-4462-9dcd-a2169e51e78a" alt="Module 2 analysis interface" style="width: 320px; height: auto;"></img>
 _Module 2 image analysis interface_
   
