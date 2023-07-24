@@ -55,7 +55,7 @@ This module provides a graphical interface where preprocessed ARG brain sections
 There is no need for the user to analyze all image sections. Analyzed data is stored in a CSV data file that is automatically reloaded whenever the app is opened.
 
 ### Input data
-This module accepts input data generated from _Module 1 - Preprocessing_. A single folder named _sections_ must be selected containing TIFF section images. Alternatively, the user can, within the _sections_ folder, create subfolders where section TIFFs can be copied. These subfolders can be loaded invidividually into the app.
+This module accepts input data generated from _Module 1 - Preprocessing_. A single folder named _sections_ must be selected containing TIFF section images. Alternatively, the user can, within the _sections_ folder, create subfolders where section TIFFs can be copied. These subfolders can be loaded invidividually into the app. NB! Choosing a higher level folder than the _sections_ will result in an error message and the analysis module crashing, forcing the user to restart the module.
 
 <img src="https://github.com/Turku-BioImaging/mouse-brain-alignment-tool/assets/11444749/4857a2c5-e56f-4fd1-8a74-22f77b1acf6b" style="width: 500px; height: auto;"></img>  
 _Example contents of sections folder used as input._
