@@ -76,10 +76,13 @@ After the background is set click _Start alignment_ to start matching ROIs to in
 </figure>
 
 <br/><br/>
-Next the sectioned brain slice, ROI map and anatomical reference image are all displayed side by side. Using the slider at the bottom the user can toggle through the reference images and choose the best match for the sample brain slice. A reference image from the middle of the brain is displayed by default. Once the corresponding anatomical reference image for the sample brain slice image has been found, the ROIs are overlayed by clicking _Add ROIs / Reset_. 
+Next the sectioned sample brain slice image, ROI map and anatomical reference image are all displayed side by side. Using the slider at the bottom the user can toggle through the reference images and choose the best match for the sample brain slice. A reference image from the middle of the brain is displayed by default. Once the corresponding anatomical reference image for the sample brain slice image has been found, the ROIs are overlayed by clicking _Add ROIs / Reset_. 
 
 <br/><br/>
 <figure>
   <img src="/assets/docs/matching_ROI.png" alt="Matching ROIs / anatomical reference with the sample slice" style="width: 50%; height: auto;">
   <figcaption>Matching ROIs / anatomical reference with the sample slice</figcaption>
 </figure>
+
+<br/><br/>
+The user can now move the ROIs to better match the sample. The ROIs can be freely moved and adjusted using the layer control options on the upper left of the window. Unnecessary ROIs can be hidden using the controls on the right or deleted alltogether. Clicking _Add ROIs / Reset_ will reset all the ROIs back to the original position from the anatomical reference. Clicking _Brain atlas_ will bring the user back to the anatomical reference image selection. After the user is satisfied with the ROI matching, clicking _Analyze rois_ will upload results to a cvs-file. 
