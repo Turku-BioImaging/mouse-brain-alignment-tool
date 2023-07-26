@@ -67,7 +67,7 @@ _Example contents of sections folder used as input._
 _Module 2 data selection interface_  
 
 Select a _sections_ folder to be analyzed and click _Continue_ to open the image analysis graphical user interface. The module will automatically open the original source image with a box for analyzing background signal level. This is done simply by moving the box to an area without signal from a sample and clicking _Calculate background_ on the right upper corner. The background signal value appears in the box under the button. The size and shape of the box for setting the background is freely adjustable. 
-After the background is set click _Start alignment_ to start matching ROIs to individual brain slices. 
+After the background is set click _Start alignment_ to start matching ROIs to individual brain slices. The background signal is automatically deducted from the analyzed ROIs in the results-file. NB! The background signal value is not recorded on the results-file.
 
 <br/><br/>
 <figure>
@@ -85,7 +85,7 @@ Next the sectioned sample brain slice image, ROI map and anatomical reference im
 </figure>
 
 <br/><br/>
-The user can now move the ROIs to better match the sample. The ROIs can be freely moved and adjusted using the layer control options on the upper left of the window. Unnecessary ROIs can be hidden using the controls on the right or deleted alltogether. Clicking _Add ROIs / Reset_ will reset all the ROIs back to the original position from the anatomical reference. Clicking _Brain atlas_ will bring the user back to the anatomical reference image selection. After the user is satisfied with the ROI matching, clicking _Analyze rois_ will upload results to a cvs-file in the subject folder (where the sections-folder is). A checkmark will appear in the bottom box on the right to indicate that the slice has been previously analyzed. The checkmarks will appear for slices that are already analyzed even if the module is closed and reopened: if the sample slice is re-analyzed, the previous data will be overwritten. 
+The user can now move the ROIs to better match the sample. Using the layer control options on the upper left of the window, the ROIs can be freely moved (_Select shapes_, drag with mouse) and adjusted (_Select vertices_, drag blue dots with mouse). Unnecessary ROIs can be hidden using the controls on the right or deleted alltogether. Clicking _Add ROIs / Reset_ will reset all the ROIs back to the original position from the anatomical reference. Clicking _Brain atlas_ will bring the user back to the anatomical reference image selection. After the user is satisfied with the ROI matching, clicking _Analyze rois_ will upload results to a cvs-file in the subject folder (where the sections-folder is). A checkmark will appear in the bottom box on the right to indicate that the slice has been previously analyzed. The checkmarks will appear for slices that are already analyzed even if the module is closed and reopened: if the sample slice is re-analyzed, the previous data will be overwritten. 
 
 <br/><br/>
 <figure>
