@@ -36,14 +36,16 @@ mamba activate mouse-brain-alignment-tool
 ```
 
 ### Build
-The build process depends on [PyInstaller](https://pyinstaller.org). In the local environment `pip install pyinstaller`. Currently, only _preprocess.exe_ can be built with PyInstaller. The analysis script _analyze.py_ requires the environment to be setup.
-  
-_preprocess.exe_
+We use [PyInstaller](https://pyinstaller.org) _*.spec_ files for the build process. In the local environment `pip install pyinstaller`.
 ```
 pyinstaller preprocess.spec
-```
-
-_analyze.exe_
-```
 pyinstaller analyze.spec
 ```
+This will generate two single-file executables _preprocess-0.2.2.exe_ and _analyze-0.2.2.exe_. Released builds are found in [here](https://github.com/Turku-BioImaging/mouse-brain-alignment-tool/releases).
+
+## Funding
+<a href="https://isidore-project.eu" target="_blank"><img src="/assets/isidore_logo.png" style="height: 50px; width: auto"></a>  
+
+Funding for this project was provided by the _Integrated Services for Infectious Disease Outbreak Research_ [(ISIDORe)](https://isidore-project.eu) project of [Euro-BioImaging](https://eurobioimaging.eu).  
+
+
