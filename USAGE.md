@@ -24,13 +24,13 @@ A single folder is required as input. This folder must contain any number of TIF
 
 <figure>
   <img src="/assets/docs/screenshot-102249.png" alt="Example of Excel data file" style="width: 50%; height: auto;">
-  <figcaption>Example of Excel data file</figcaption>
+  <figcaption><em>Example of Excel data file</em></figcaption>
 </figure>
   
 <br/><br/>
 <figure>
   <img src="/assets/docs/screenshot-102625.png" alt="Example contents of input folder" style="width: 50%; height: auto;">
-  <figcaption>Example contents of input folder</figcaption>
+  <figcaption><em>Example contents of input folder</em></figcaption>
 </figure>
   
 <br/><br/>
@@ -40,7 +40,7 @@ For every image, if the column *num_animals* has a value of _1_, then the column
 
 <figure>
   <img src="/assets/docs/example_dataset_layout.png" alt="How the tool differentiates between animals" style="width: 20%; height: auto;">
-  <figcaption>How the tool differentiates between animals</figcaption>
+  <figcaption><em>How the tool differentiates between animals</em></figcaption>
 </figure>
 
 ### Expected output
@@ -85,7 +85,7 @@ After the background is set click _Start alignment_ to start matching ROIs to in
 
 <figure>
   <img src="/assets/docs/setting_background.png" alt="Module 2 Image analysis interface for setting background" style="width: 50%; height: auto;">
-  <figcaption>Module 2 Image analysis interface for setting background</figcaption>
+  <figcaption><em>Module 2 Image analysis interface for setting background</em></figcaption>
 </figure>
 
 <br/><br/>
@@ -95,7 +95,7 @@ Next the sectioned sample brain slice image, ROI map and anatomical reference im
 
 <figure>
   <img src="/assets/docs/matching_ROI.png" alt="Matching ROIs / anatomical reference with the sample slice" style="width: 50%; height: auto;">
-  <figcaption>Matching ROIs / anatomical reference with the sample slice</figcaption>
+  <figcaption><em>Matching ROIs / anatomical reference with the sample slice</em></figcaption>
 </figure>
 
 <br/><br/>
@@ -105,7 +105,7 @@ The user can now move the ROIs to better match the sample. Using the layer contr
 
 <figure>
   <img src="/assets/docs/moving_ROI.png" alt="Manually finetuning ROI matching for analysis" style="width: 50%; height: auto;">
-  <figcaption>Manually finetuning ROI matching for analysis</figcaption>
+  <figcaption><em>Manually finetuning ROI matching for analysis</em></figcaption>
 </figure>
 
 <br/><br/>
