@@ -19,9 +19,10 @@ Semi-automated processing of autoradiography (ARG) images from mouse brain tissu
   </a>
 </div>
 
+## User Manual
+The user manual is found [here](https://github.com/Turku-BioImaging/mouse-brain-alignment-tool/USAGE.md).
 
-
-## Developers
+## Developers / Contributors
 
 ### Environments
 We use the mamba or conda package manager. If there are any changes in the `environment.yml`, please update your environment using one of the following lines:
