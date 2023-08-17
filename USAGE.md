@@ -52,7 +52,7 @@ Double-click on **preprocess-0.2.2.exe** to open the preprocessing interface (th
 
 ---
 
-<img style="width: 320px; height: auto;" alt="preprocess_gui" src="https://github.com/Turku-BioImaging/mouse-brain-alignment-tool/assets/136598378/581beab6-5ac6-47db-8922-45bfb86e914a">
+<img style="width: 320px; height: auto;" alt="preprocess_gui" src="./assets/docs/screenshot-preprocess.png">
 
 Select the directory where your images and data.xls file are. Select the folder where you want the preprocessed images to appear as output directory.
 Depending on data size, the preprocess can take longer time. Process can be tracked from running log, where all processed images will be marked, as well as the completion of preprocessing.
@@ -68,14 +68,14 @@ There is no need for the user to analyze all image sections. Analyzed data is st
 
 This module accepts input data generated from _Module 1 - Preprocessing_. A single folder named _sections_ must be selected containing TIFF section images. Alternatively, the user can, within the _sections_ folder, create subfolders where section TIFFs can be copied. These subfolders can be loaded invidividually into the app. NB! Choosing a higher level folder than the _sections_ will result in an error message and the analysis module crashing, forcing the user to restart the module.
 
-<img src="https://github.com/Turku-BioImaging/mouse-brain-alignment-tool/assets/11444749/4857a2c5-e56f-4fd1-8a74-22f77b1acf6b" style="width: 500px; height: auto;"></img>  
+<img src="./assets/docs/screenshot-input-data.png" style="width: 500px; height: auto;"></img>  
 _Example contents of sections folder used as input._
 
 ### Expected output
 
 ### Usage
 
-<img src="https://github.com/Turku-BioImaging/mouse-brain-alignment-tool/assets/11444749/d865c645-9c74-46a0-a5da-3b80c8edc463" alt="Module 2 data selection interface" style="width: 320px; height: auto;"></img>  
+<img src="./assets/docs/screenshot-module-analysis.png" alt="Module 2 data selection interface" style="width: 320px; height: auto;"></img>  
 _Module 2 data selection interface_
 
 Select a _sections_ folder to be analyzed and click _Continue_ to open the image analysis graphical user interface. The module will automatically open the original source image with a box for analyzing background signal level. This is done simply by moving the box to an area without signal from a sample and clicking _Calculate background_ on the right upper corner. The background signal value appears in the box under the button. The size and shape of the box for setting the background is freely adjustable.
