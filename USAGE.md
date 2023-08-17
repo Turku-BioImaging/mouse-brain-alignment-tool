@@ -23,13 +23,13 @@ A single folder is required as input. This folder must contain any number of TIF
 <br/><br/>
 
 <figure>
-  <img src="./assets/docs/screenshot-102249.png" alt="Example of Excel data file" style="width: 50%; height: auto;">
+  <img src="./assets/docs/screenshot-102249.png" alt="Example of Excel data file" style="width: 80%; height: auto;">
   <figcaption><em>Example of Excel data file</em></figcaption>
 </figure>
   
 <br/><br/>
 <figure>
-  <img src="./assets/docs/screenshot-102625.png" alt="Example contents of input folder" style="width: 50%; height: auto;">
+  <img src="./assets/docs/screenshot-102625.png" alt="Example contents of input folder" style="width: 80%; height: auto;">
   <figcaption><em>Example contents of input folder</em></figcaption>
 </figure>
   
@@ -39,7 +39,7 @@ For every image, if the column *num_animals* has a value of _1_, then the column
 <br/><br/>
 
 <figure>
-  <img src="./assets/docs/example_dataset_layout.png" alt="How the tool differentiates between animals" style="width: 20%; height: auto;">
+  <img src="./assets/docs/example_dataset_layout.png" alt="How the tool differentiates between animals" style="width: 400px; height: auto;">
   <figcaption><em>How the tool differentiates between animals</em></figcaption>
 </figure>
 
@@ -52,7 +52,7 @@ Double-click on **preprocess-0.2.2.exe** to open the preprocessing interface (th
 
 ---
 
-<img style="width: 320px; height: auto;" alt="preprocess_gui" src="./assets/docs/screenshot-preprocess.png">
+<img style="width: 40%; height: auto;" alt="preprocess_gui" src="./assets/docs/screenshot-preprocess.png">
 
 Select the directory where your images and data.xls file are. Select the folder where you want the preprocessed images to appear as output directory.
 Depending on data size, the preprocess can take longer time. Process can be tracked from running log, where all processed images will be marked, as well as the completion of preprocessing.
@@ -68,14 +68,14 @@ There is no need for the user to analyze all image sections. Analyzed data is st
 
 This module accepts input data generated from _Module 1 - Preprocessing_. A single folder named _sections_ must be selected containing TIFF section images. Alternatively, the user can, within the _sections_ folder, create subfolders where section TIFFs can be copied. These subfolders can be loaded invidividually into the app. NB! Choosing a higher level folder than the _sections_ will result in an error message and the analysis module crashing, forcing the user to restart the module.
 
-<img src="./assets/docs/screenshot-input-data.png" style="width: 500px; height: auto;"></img>  
+<img src="./assets/docs/screenshot-input-data.png" style="width: 50%; height: auto;"></img>  
 _Example contents of sections folder used as input._
 
 ### Expected output
 
 ### Usage
 
-<img src="./assets/docs/screenshot-module-analysis.png" alt="Module 2 data selection interface" style="width: 320px; height: auto;"></img>  
+<img src="./assets/docs/screenshot-module-analysis.png" alt="Module 2 data selection interface" style="width: 40%; height: auto;"></img>  
 _Module 2 data selection interface_
 
 Select a _sections_ folder to be analyzed and click _Continue_ to open the image analysis graphical user interface. The module will automatically open the original source image with a box for analyzing background signal level. This is done simply by moving the box to an area without signal from a sample and clicking _Calculate background_ on the right upper corner. The background signal value appears in the box under the button. The size and shape of the box for setting the background is freely adjustable.
@@ -84,7 +84,7 @@ After the background is set click _Start alignment_ to start matching ROIs to in
 <br/><br/>
 
 <figure>
-  <img src="./assets/docs/setting_background.png" alt="Module 2 Image analysis interface for setting background" style="width: 50%; height: auto;">
+  <img src="./assets/docs/setting_background.png" alt="Module 2 Image analysis interface for setting background" style="width: 60%; height: auto;">
   <figcaption><em>Module 2 Image analysis interface for setting background</em></figcaption>
 </figure>
 
@@ -94,7 +94,7 @@ Next the sectioned sample brain slice image, ROI map and anatomical reference im
 <br/><br/>
 
 <figure>
-  <img src="./assets/docs/matching_ROI.png" alt="Matching ROIs / anatomical reference with the sample slice" style="width: 50%; height: auto;">
+  <img src="./assets/docs/matching_ROI.png" alt="Matching ROIs / anatomical reference with the sample slice" style="width: 60%; height: auto;">
   <figcaption><em>Matching ROIs / anatomical reference with the sample slice</em></figcaption>
 </figure>
 
@@ -104,8 +104,8 @@ The user can now move the ROIs to better match the sample. Using the layer contr
 <br/><br/>
 
 <figure>
-  <img src="./assets/docs/moving_ROI.png" alt="Manually finetuning ROI matching for analysis" style="width: 50%; height: auto;">
-  <figcaption><em>Manually finetuning ROI matching for analysis</em></figcaption>
+  <img src="./assets/docs/moving_ROI.png" alt="Manually finetuning ROI matching for analysis" style="width: 60%; height: auto;">
+  <figcaption><em>Manually fine-tuning ROI matching for analysis</em></figcaption>
 </figure>
 
 <br/><br/>
