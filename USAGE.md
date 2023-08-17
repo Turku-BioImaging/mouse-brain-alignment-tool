@@ -47,7 +47,7 @@ For every image, if the column *num_animals* has a value of _1_, then the column
 
 ### Usage
 
-Double-click on **preprocess-0.2.0.exe** to open the preprocessing interface (this can take up to a minute). After the preprocess window is open, select the source directory (the folder containing images and the prepared Excel sheet _data.xlsx_). Select the output directory, as where do you wish the preprocessed data to be saved to. Click run to start the preprocess.  
+Double-click on **preprocess-0.2.2.exe** to open the preprocessing interface (this can take up to a minute). After the preprocess window is open, select the source directory (the folder containing images and the prepared Excel sheet _data.xlsx_). Select the output directory, as where do you wish the preprocessed data to be saved to. Click run to start the preprocess.  
 **IMPORTANT:** The Excel document should not be open while the preprocess app is running!
 
 ---
